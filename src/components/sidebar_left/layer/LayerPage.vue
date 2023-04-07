@@ -1,13 +1,13 @@
 <script setup>
 import LayerItem from "./LayerPageItem.vue";
-import {NButton, NCard, NList, NSpace, useMessage} from "naive-ui";
-import {ref} from "vue";
-import {useUsersStore} from "@/store/user";
-import {storeToRefs} from 'pinia';
+import { NButton, NCard, NList, NSpace, useMessage } from "naive-ui";
+import { ref } from "vue";
+import { useUsersStore } from "@/store/user";
+import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const store = useUsersStore();
-const {exampleData: dataItems, layers: layerItems} = storeToRefs(store)
+const { exampleData: dataItems, layers: layerItems } = storeToRefs(store)
 const selectedItemId = ref(-1);
 
 const itemClicked = (itemId) => {
@@ -109,9 +109,8 @@ const locateLayer = warningLayerNotChosenDecorator(() => {
             </n-space>
 
         </n-card>
-        <LayerItem v-for="item in layerItems"
-                   :style="item.uuid === selectedItemId ? 'background-color: #4ccf50' : ''" :title="item.title"
-                   :checked="item.checked" @click="itemClicked(item.uuid)"/>
+        <LayerItem v-for="item in layerItems" :style="item.uuid === selectedItemId ? 'background-color: #4ccf50' : ''"
+            :title="item.title" :checked="item.checked" @click="itemClicked(item.uuid)" />
     </n-list>
 </template>
 

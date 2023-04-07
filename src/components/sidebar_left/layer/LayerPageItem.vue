@@ -1,7 +1,7 @@
 <script setup>
-import {NListItem, NCheckbox, NButton, NSpace} from 'naive-ui'
+import { NListItem, NCheckbox, NButton, NSpace } from 'naive-ui'
 
-const props = defineProps({
+defineProps({
     title: String,
     type: String,
     checked: Boolean

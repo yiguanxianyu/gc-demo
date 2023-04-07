@@ -16,6 +16,3 @@ import DataPage from "../data/DataPage.vue";
         </n-tabs>
     </n-scrollbar>
 </template>
-
-<style scoped>
-</style>

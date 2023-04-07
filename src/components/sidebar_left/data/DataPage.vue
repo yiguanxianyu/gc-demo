@@ -1,24 +1,24 @@
 <script setup>
 import DataItem from "./DataPageItem.vue";
-import {NList, NCard, NButton, NSpace, useMessage, useDialog} from "naive-ui";
-import {ref} from "vue";
-import {useUsersStore} from "@/store/user";
-import {storeToRefs} from 'pinia';
+import { NList, NCard, NButton, NSpace, useMessage, useDialog } from "naive-ui";
+import { ref } from "vue";
+import { useUsersStore } from "@/store/user";
+import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const dialog = useDialog();
 const store = useUsersStore();
-const {exampleData: dataItems, layers: layerItems} = storeToRefs(store)
+const { exampleData: dataItems, layers: layerItems } = storeToRefs(store)
 const selectedItemId = ref(-1);
 
 const itemClicked = (itemId) => {
-    console.log(itemId, selectedItemId.value)
     if (itemId === selectedItemId.value) {
         selectedItemId.value = -1;
     } else {
         selectedItemId.value = itemId;
     }
 }
+
 const warningFileNotChosenDecorator = (fn) => {
     return () => {
         if (selectedItemId.value === -1) {
@@ -28,9 +28,11 @@ const warningFileNotChosenDecorator = (fn) => {
         fn();
     }
 }
+
 const previewFile = warningFileNotChosenDecorator(() => {
-    console.log("preview" + selectedItemId.value)
+    message.error("该功能尚未实现");
 })
+
 const addToLayer = warningFileNotChosenDecorator(() => {
     //Check layer exists
     if (layerItems.value.find(item => item.uuid === selectedItemId.value)) {
@@ -98,7 +100,7 @@ const downloadFile = warningFileNotChosenDecorator(() => {
             </n-space>
         </n-card>
         <DataItem v-for="item in dataItems" :style="item.uuid === selectedItemId ? 'background-color: #4ccf50' : ''"
-                  :title="item.title" :type="item.type" @click="itemClicked(item.uuid)"/>
+            :title="item.title" :type="item.type" @click="itemClicked(item.uuid)" />
     </n-list>
 </template>
 

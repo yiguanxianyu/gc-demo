@@ -1,56 +1,43 @@
+<script setup>
+import {NButton, NMenu, NScrollbar} from 'naive-ui'
+import {useUsersStore} from "@/store/user.js";
+import {storeToRefs} from "pinia";
+import {ref} from "vue";
+import AlgoSetup from "./AlgoSetup.vue";
+
+const store = useUsersStore();
+const {algorithms: menuOptions} = storeToRefs(store)
+
+const currAlgoInfo = ref({})
+const showModal = ref(false)
+
+const menuValueUpdate = (key, item) => {
+    if (!key.startsWith("menu-")) {
+        currAlgoInfo.value = item;
+        showModal.value = true;
+    }
+}
+</script>
+
 <template>
     <div class="container">
         <p id="title">工具箱</p>
         <n-scrollbar style="border:1px solid #dddddd;border-radius: 5px;">
-        <n-menu
-            :root-indent="12"
-            :indent="18"
-            :options="menuOptions"
-            :default-expanded-keys="defaultExpandedKeys"
-            @update:expanded-keys="handleUpdateExpandedKeys"
-        />
+            <n-menu default-expand-all
+                    :root-indent="12"
+                    :indent="18"
+                    :options="menuOptions"
+                    @update-value="menuValueUpdate"/>
         </n-scrollbar>
         <div>
-            <n-button color="#7fdd09">深色模式</n-button>
+            <n-button color="#7fdd09" @click="showModal=true">深色模式</n-button>
             <n-button color="#a90d19">上传数据</n-button>
         </div>
+
+        <AlgoSetup v-model:visible="showModal" :algo-info="currAlgoInfo"/>
     </div>
+
 </template>
-
-<script setup>
-import { NCard, NButton,NMenu,NScrollbar} from 'naive-ui'
-
-const menuOptions = [
-    {
-        label: "数据管理",
-        key: "data-management",
-        children: [
-            {
-                label: "数据上传",
-                key: "data-upload",
-            },
-            {
-                label: "数据下载",
-                key: "data-download",
-            },
-        ]
-    },
-    {
-        label: "基础分析",
-        key: "basic-analysis",
-        children: [
-            {
-                label: "NDVI计算",
-                key: "ndvi-calculation",
-            },
-        ]
-    }
-];
-let defaultExpandedKeys= ["data-management", "basic-analysis"];
-let handleUpdateExpandedKeys=(keys) =>{
-    console.log(keys);
-}
-</script>
 
 <style scoped>
 .container {

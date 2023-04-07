@@ -24,8 +24,59 @@ export const useUsersStore = defineStore('users', {
                 title: "相见恨晚",
                 type: "raster",
                 checked: true
+            }],
+            algorithms: [{
+                label: "数据管理",
+                key: "menu-data-management",
+                children: [{
+                    label: "数据上传",
+                    key: "data-upload",
+                    text: "这个呢就是数据上传的功能",
+                    arguments: [{
+                        description: "arg1",
+                        inputType: "raster",
+                        optional: false
+                    }, {
+                        description: "arg2",
+                        inputType: "common",
+                        optional: true
+                    }]
+                }, {
+                    label: "数据下载",
+                    key: "data-download",
+                    text: "这个呢就是数据下载的功能",
+                    arguments: [{
+                        description: "arg1",
+                        inputType: "vector",
+                        optional: false
+                    }, {
+                        description: "arg2",
+                        inputType: "common",
+                        optional: false
+                    }, {
+                        description: "arg3",
+                        inputType: "common",
+                        optional: true
+                    }]
+                }]
+            }, {
+                label: "基础分析",
+                key: "menu-basic-analysis",
+                children: [{
+                    label: "NDVI计算",
+                    key: "ndvi-calculation",
+                    text: "这个呢就是NDVI计算的功能",
+                    arguments: [{
+                        description: "arg1",
+                        inputType: "raster",
+                        optional: false
+                    }, {
+                        description: "arg2",
+                        inputType: "common",
+                        optional: false
+                    }]
+                }]
             }]
         }
-    },
-    getters: {}
+    }
 })
