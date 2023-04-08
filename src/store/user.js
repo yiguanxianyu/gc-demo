@@ -6,7 +6,7 @@ export const useUsersStore = defineStore('users', {
     // 其它配置项
     state: () => {
         return {
-            exampleData: [{
+            data: [{
                 title: "相见恨晚",
                 uuid: "99EEA228-4E1A-0F90-E44E-F8E208366CC6",
                 type: "raster",
@@ -29,17 +29,21 @@ export const useUsersStore = defineStore('users', {
                 label: "数据管理",
                 key: "menu-data-management",
                 children: [{
-                    label: "数据上传",
+                    label: "栅格运算",
                     key: "data-upload",
                     text: "这个呢就是数据上传的功能",
                     arguments: [{
-                        description: "arg1",
+                        description: "输入文件",
                         inputType: "raster",
-                        optional: false
+                        required: true
                     }, {
-                        description: "arg2",
+                        description: "输出文件名",
                         inputType: "common",
-                        optional: true
+                        required: true
+                    }, {
+                        description: "某个参数",
+                        inputType: "common",
+                        required: false
                     }]
                 }, {
                     label: "数据下载",
@@ -48,15 +52,15 @@ export const useUsersStore = defineStore('users', {
                     arguments: [{
                         description: "arg1",
                         inputType: "vector",
-                        optional: false
+                        required: true
                     }, {
                         description: "arg2",
                         inputType: "common",
-                        optional: false
+                        required: true
                     }, {
                         description: "arg3",
                         inputType: "common",
-                        optional: true
+                        required: false
                     }]
                 }]
             }, {
@@ -69,14 +73,40 @@ export const useUsersStore = defineStore('users', {
                     arguments: [{
                         description: "arg1",
                         inputType: "raster",
-                        optional: false
+                        required: true
                     }, {
                         description: "arg2",
                         inputType: "common",
-                        optional: false
+                        required: false
                     }]
                 }]
             }]
+        }
+    },
+    getters: {
+        getVectorArray(state) {
+            let vectorArray = [];
+            state.data.forEach(item => {
+                if (item.type === "vector") {
+                    vectorArray.push({
+                        label: item.title,
+                        value: item.uuid
+                    })
+                }
+            })
+            return vectorArray
+        },
+        getRasterArray(state) {
+            let rasterArray = [];
+            state.data.forEach(item => {
+                if (item.type === "raster") {
+                    rasterArray.push({
+                        label: item.title,
+                        value: item.uuid
+                    })
+                }
+            })
+            return rasterArray
         }
     }
 })

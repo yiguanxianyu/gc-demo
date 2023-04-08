@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia';
 const message = useMessage();
 const dialog = useDialog();
 const store = useUsersStore();
-const { exampleData: dataItems, layers: layerItems } = storeToRefs(store)
+const { data: dataItems, layers: layerItems } = storeToRefs(store)
 const selectedItemId = ref(-1);
 
 const itemClicked = (itemId) => {

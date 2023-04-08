@@ -13,15 +13,8 @@
             </n-layout-sider>
 
             <n-layout>
-                <n-layout-header>这是我的用户名</n-layout-header>
                 <n-layout-content content-style="padding:10px">
-                    <n-button ghost color="#006868" size="small">
-                        设置
-                    </n-button>
-                    <div style="width: 10px;display: inline-block"/>
-                    <n-button ghost color="#006868" size="small">
-                        退出
-                    </n-button>
+                    黄色潜水艇
                 </n-layout-content>
             </n-layout>
 
