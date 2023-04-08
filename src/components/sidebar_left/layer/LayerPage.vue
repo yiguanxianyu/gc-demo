@@ -1,25 +1,26 @@
 <script setup>
 import LayerItem from "./LayerPageItem.vue";
-import { NButton, NCard, NList, NSpace, useMessage } from "naive-ui";
-import { ref } from "vue";
-import { useUsersStore } from "@/store/user";
-import { storeToRefs } from 'pinia';
+import {NButton, NCard, NList, NSpace, useMessage} from "naive-ui";
+import {ref} from "vue";
+import {useUsersStore} from "@/store/user";
+import {storeToRefs} from 'pinia';
 
 const message = useMessage();
 const store = useUsersStore();
-const { data: dataItems, layers: layerItems } = storeToRefs(store)
-const selectedItemId = ref(-1);
+const {layers: layerItems} = storeToRefs(store)
+const selectedLayerPath = ref(null);
 
 const itemClicked = (itemId) => {
-    if (itemId === selectedItemId.value) {
-        selectedItemId.value = -1;
+    if (itemId === selectedLayerPath.value) {
+        selectedLayerPath.value = null;
     } else {
-        selectedItemId.value = itemId;
+        selectedLayerPath.value = itemId;
     }
 }
+
 const warningLayerNotChosenDecorator = (fn) => {
     return () => {
-        if (selectedItemId.value === -1) {
+        if (!selectedLayerPath.value) {
             message.error("请先选择图层");
             return;
         }
@@ -28,13 +29,13 @@ const warningLayerNotChosenDecorator = (fn) => {
 }
 
 const moveUp = warningLayerNotChosenDecorator(() => {
-    if (layerItems.value[0].uuid === selectedItemId.value) {
+    if (layerItems.value[0].path === selectedLayerPath.value) {
         message.error("已经是最上面了");
         return;
     }
 
     for (let i = 0; i < layerItems.value.length; i++) {
-        if (layerItems.value[i].uuid === selectedItemId.value) {
+        if (layerItems.value[i].path === selectedLayerPath.value) {
             [layerItems.value[i], layerItems.value[i - 1]] = [layerItems.value[i - 1], layerItems.value[i]];
             //TODO: move up in leaflet layer
             break;
@@ -43,13 +44,13 @@ const moveUp = warningLayerNotChosenDecorator(() => {
 })
 
 const moveDown = warningLayerNotChosenDecorator(() => {
-    if (layerItems.value[layerItems.value.length - 1].uuid === selectedItemId.value) {
+    if (layerItems.value[layerItems.value.length - 1].path === selectedLayerPath.value) {
         message.error("已经是最下面了");
         return;
     }
 
     for (let i = 0; i < layerItems.value.length; i++) {
-        if (layerItems.value[i].uuid === selectedItemId.value) {
+        if (layerItems.value[i].path === selectedLayerPath.value) {
             [layerItems.value[i], layerItems.value[i + 1]] = [layerItems.value[i + 1], layerItems.value[i]];
             //TODO: move down in leaflet layer
             break;
@@ -58,25 +59,28 @@ const moveDown = warningLayerNotChosenDecorator(() => {
 })
 
 const removeLayer = warningLayerNotChosenDecorator(() => {
-    layerItems.value = layerItems.value.filter(item => item.uuid !== selectedItemId.value);
-    selectedItemId.value = -1;
+    layerItems.value = layerItems.value.filter(item => item.path !== selectedLayerPath.value);
+    selectedLayerPath.value = null;
 
     //TODO: remove from leaflet layer
 })
 
 const updateLayerName = warningLayerNotChosenDecorator(() => {
-    let layerItemToUpdate = layerItems.value.find(item => item.uuid === selectedItemId.value);
-    let dataItemToUpdate = dataItems.value.find(item => item.uuid === selectedItemId.value);
-
-    const newTitle = window.prompt("请输入新的名称", dataItemToUpdate.title);
-
-    dataItemToUpdate.title = newTitle;
-    layerItemToUpdate.title = newTitle;
+    const itemToUpdate = layerItems.value.find(item => item.path === selectedLayerPath.value);
+    const newLabel = window.prompt("请输入新的名称", itemToUpdate.label);
+    if (newLabel === null) {
+        return;
+    }
+    store.updateName(selectedLayerPath.value, newLabel);
+    // let layerItemToUpdate = layerItems.value.find(item => item.path === selectedLayerPath.value);
+    // let dataItemToUpdate = dataItems.value.find(item => item.path === selectedLayerPath.value);
+    // dataItemToUpdate.title = newTitle;
+    // layerItemToUpdate.title = newTitle;
 })
 
 const toggleDisplay = warningLayerNotChosenDecorator(() => {
     for (let i = 0; i < layerItems.value.length; i++) {
-        if (layerItems.value[i].uuid === selectedItemId.value) {
+        if (layerItems.value[i].path === selectedLayerPath.value) {
             layerItems.value[i].checked = !layerItems.value[i].checked
             //TODO: toggle display
             break
@@ -109,8 +113,9 @@ const locateLayer = warningLayerNotChosenDecorator(() => {
             </n-space>
 
         </n-card>
-        <LayerItem v-for="item in layerItems" :style="item.uuid === selectedItemId ? 'background-color: #4ccf50' : ''"
-            :title="item.title" :checked="item.checked" @click="itemClicked(item.uuid)" />
+        <LayerItem v-for="item in layerItems"
+                   :style="item.path === selectedLayerPath ? 'background-color: #4ccf50' : ''"
+                   :label="item.label" :checked="item.checked" @click="itemClicked(item.path)"/>
     </n-list>
 </template>
 

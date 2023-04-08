@@ -12,7 +12,6 @@ import {
 } from "naive-ui";
 import { storeToRefs } from "pinia";
 import { useUsersStore } from "@/store/user.js";
-import ArgInputItem from "@/components/sidebar_right/ArgInputItem.vue";
 import ArgForm from "@/components/sidebar_right/ArgForm.vue";
 
 const message = useMessage();
@@ -23,6 +22,7 @@ defineProps({
     visible: Boolean,
     algoInfo: Object
 });
+
 const emit = defineEmits(['update:visible']);
 
 const closeModal = () => {

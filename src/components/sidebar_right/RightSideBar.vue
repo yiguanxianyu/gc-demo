@@ -46,9 +46,9 @@ const userExit = () => {
         <div id="button_group">
             <n-button @click="switchColorMode">深色模式</n-button>
 
-            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">
+<!--            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">-->
                 <n-button>上传文件</n-button>
-            </n-upload>
+<!--            </n-upload>-->
 
             <n-button @click="userExit">退出</n-button>
         </div>

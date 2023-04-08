@@ -2,8 +2,7 @@
 import { NListItem, NCheckbox, NButton, NSpace } from 'naive-ui'
 
 defineProps({
-    title: String,
-    type: String,
+    label: String,
     checked: Boolean
 })
 
@@ -11,7 +10,7 @@ defineProps({
 
 <template>
     <n-list-item id="container">
-        <n-checkbox id="checkbox" :checked="checked"></n-checkbox>{{ title }}
+        <n-checkbox id="checkbox" :checked="checked"></n-checkbox>{{ label }}
     </n-list-item>
 </template>
 

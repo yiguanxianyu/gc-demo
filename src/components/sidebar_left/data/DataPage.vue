@@ -1,15 +1,17 @@
 <script setup>
 import DataItem from "./DataPageItem.vue";
-import { NList, NCard, NButton, NSpace, useMessage, useDialog } from "naive-ui";
-import { ref } from "vue";
-import { useUsersStore } from "@/store/user";
-import { storeToRefs } from 'pinia';
+import {NList, NCard, NButton, NSpace, NTree, useMessage, useDialog} from "naive-ui";
+import {ref} from "vue";
+import {useUsersStore} from "@/store/user";
+import {storeToRefs} from 'pinia';
 
 const message = useMessage();
 const dialog = useDialog();
 const store = useUsersStore();
-const { data: dataItems, layers: layerItems } = storeToRefs(store)
-const selectedItemId = ref(-1);
+const {data: dataItems, layers: layerItems} = storeToRefs(store)
+const selectedItemId = ref();
+let selectedItem = null;
+
 
 const itemClicked = (itemId) => {
     if (itemId === selectedItemId.value) {
@@ -21,7 +23,7 @@ const itemClicked = (itemId) => {
 
 const warningFileNotChosenDecorator = (fn) => {
     return () => {
-        if (selectedItemId.value === -1) {
+        if (!selectedItem) {
             message.error("请先选择文件");
             return;
         }
@@ -34,34 +36,41 @@ const previewFile = warningFileNotChosenDecorator(() => {
 })
 
 const addToLayer = warningFileNotChosenDecorator(() => {
-    //Check layer exists
-    if (layerItems.value.find(item => item.uuid === selectedItemId.value)) {
+    //Check if it is a folder
+    if (selectedItem.children) {
+        message.error("文件夹不能添加到图层");
+        return;
+    }
+    //Check if layer exists
+    if (store.checkLayerExists(selectedItem.path)) {
         message.error("已存在的图层不能重复添加");
         return;
     }
-
-    const itemToAdd = dataItems.value.find(item => item.uuid === selectedItemId.value)
-    layerItems.value.push({
-        uuid: itemToAdd.uuid,
-        title: itemToAdd.title,
-        type: itemToAdd.type,
-        checked: true
-    })
-
+    store.addLayerItem(selectedItem);
     //TODO: add to leaflet layer
 })
 
 const renameFile = warningFileNotChosenDecorator(() => {
-    let layerItemToUpdate = layerItems.value.find(item => item.uuid === selectedItemId.value);
-    let dataItemToUpdate = dataItems.value.find(item => item.uuid === selectedItemId.value);
-
-    const newTitle = window.prompt("请输入新的名称", dataItemToUpdate.title);
-
-    dataItemToUpdate.title = newTitle;
-
-    if (layerItemToUpdate) {
-        layerItemToUpdate.title = newTitle;
+    const newLabel = window.prompt("请输入新的名称", selectedItem.label);
+    if (newLabel === null) {
+        return;
     }
+    store.updateName(selectedItem.path, newLabel);
+    //
+    // const itemToUpdate = layerItems.value.find(item => item.path === selectedLayerPath.value);
+    //
+    //
+    //
+    // let layerItemToUpdate = layerItems.value.find(item => item.uuid === selectedItemId.value);
+    //
+    //
+    // const newTitle = window.prompt("请输入新的名称", dataItemToUpdate.title);
+    //
+    // dataItemToUpdate.title = newTitle;
+    //
+    // if (layerItemToUpdate) {
+    //     layerItemToUpdate.title = newTitle;
+    // }
 })
 
 const deleteFile = warningFileNotChosenDecorator(() => {
@@ -86,6 +95,19 @@ const deleteFile = warningFileNotChosenDecorator(() => {
 const downloadFile = warningFileNotChosenDecorator(() => {
     message.error("该功能尚未实现");
 })
+
+const selectedKeyChanged = (keys, option, meta) => {
+    // console.log(keys, option, meta);
+    switch (meta.action) {
+        case  'select':
+            selectedItem = meta.node;
+            break;
+        case 'unselect':
+            selectedItem = null;
+            break;
+    }
+}
+
 </script>
 
 <template>
@@ -99,8 +121,11 @@ const downloadFile = warningFileNotChosenDecorator(() => {
                 <n-button class="button" size="small" @click="downloadFile">下载</n-button>
             </n-space>
         </n-card>
-        <DataItem v-for="item in dataItems" :style="item.uuid === selectedItemId ? 'background-color: #4ccf50' : ''"
-            :title="item.title" :type="item.type" @click="itemClicked(item.uuid)" />
+        <!--        <DataItem v-for="item in dataItems" :style="item.uuid === selectedItemId ? 'background-color: #4ccf50' : ''"-->
+        <!--            :title="item.title" :type="item.type" @click="itemClicked(item.uuid)" />-->
+        <n-tree key-field="path" :data="dataItems" @update:selected-keys="selectedKeyChanged" expand-on-click
+                selectable>
+        </n-tree>
     </n-list>
 </template>
 
