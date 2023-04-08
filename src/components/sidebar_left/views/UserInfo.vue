@@ -2,14 +2,9 @@
     <n-space vertical size="large">
         <n-layout has-sider>
 
-            <n-layout-sider
-                    width="50"
-                    content-style="display:flex;flex-direction: column;justify-content:center;align-items:center"
-            >
-                <n-avatar
-                        size="large"
-                        src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-                />
+            <n-layout-sider width="50"
+                content-style="display:flex;flex-direction: column;justify-content:center;align-items:center">
+                <n-avatar size="large" src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg" />
             </n-layout-sider>
 
             <n-layout>

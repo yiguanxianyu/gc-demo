@@ -8,8 +8,7 @@
  */
 
 import {
-    NButton, NModal, NCard, NLayout,
-    NLayoutSider, useMessage
+    NButton, NModal, NCard, useMessage
 } from "naive-ui";
 import { storeToRefs } from "pinia";
 import { useUsersStore } from "@/store/user.js";
@@ -42,15 +41,15 @@ const userCanceled = () => {
 
 <template>
     <n-modal :show="visible" :mask-closable="false" @update:show="closeModal">
-        <n-card style="width:600px" :title="algoInfo.label" :bordered="false" size="huge" role="dialog" aria-modal="true">
+        <n-card style="width:800px" :title="algoInfo.label" :bordered="false" size="huge" role="dialog" aria-modal="true">
             <template #header-extra>
                 <n-button type="primary" @click="userCanceled" style="margin: 5px">取消</n-button>
                 <n-button type="primary" @click="userConfirmed">执行</n-button>
             </template>
 
             <div id="container">
-                <n-card id="algo_text">{{ algoInfo.text }}</n-card>
-                <ArgForm v-model:arg-array="algoInfo.arguments" />
+                <n-card id="algo_text" style="white-space: pre-line">{{ algoInfo.text }}</n-card>
+                <ArgForm v-model:arg-array="algoInfo.arguments" style="width: 250px" />
             </div>
 
 

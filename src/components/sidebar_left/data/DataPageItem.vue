@@ -1,6 +1,5 @@
 <script setup>
-import { NButton, NListItem, NSpace } from 'naive-ui'
-import { defineProps, ref } from 'vue'
+import { NListItem } from 'naive-ui'
 
 defineProps({
     title: String,
