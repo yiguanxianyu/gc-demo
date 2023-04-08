@@ -14,15 +14,26 @@ jobs:
       # 官方action，将代码拉取到虚拟机
       - name: Checkout  ️ 
         uses: actions/checkout@v3
+        
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
 
-      - name: Install and Build   # 安装依赖、打包，如果提前已打包好无需这一步
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: latest
+          run_install: true
+
+      - name: Build   # 安装依赖、打包，如果提前已打包好无需这一步
         run: |
-          npm install pnpm
-          pnpm install
-          pnpm run build
+          pnpm build
 
       - name: Deploy   # 部署
         uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
           branch: gh-pages # 部署后提交到那个分支
           folder: dist # 这里填打包好的目录名称
+
