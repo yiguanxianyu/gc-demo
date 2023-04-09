@@ -1,13 +1,13 @@
 <script setup>
 import LayerItem from "./LayerPageItem.vue";
-import {NButton, NCard, NList, NSpace, useMessage} from "naive-ui";
-import {ref} from "vue";
-import {useUsersStore} from "@/store/user";
-import {storeToRefs} from 'pinia';
+import { NButton, NCard, NList, NSpace, useMessage } from "naive-ui";
+import { ref } from "vue";
+import { useUsersStore } from "@/store/user";
+import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const store = useUsersStore();
-const {layers: layerItems} = storeToRefs(store)
+const { layers: layerItems } = storeToRefs(store)
 const selectedLayerPath = ref(null);
 
 const itemClicked = (itemId) => {
@@ -97,6 +97,12 @@ const locateLayer = warningLayerNotChosenDecorator(() => {
     message.error("该功能尚未实现");
     //TODO: locate layer
 })
+
+const getLayerItemStyle = (item) => {
+    const bgColor = item.path === selectedLayerPath.value ? 'background-color: #4ccf50' : '';
+    const wordBreak = ';word-break: break-all'
+    return bgColor + wordBreak;
+}
 </script>
 
 <template>
@@ -113,9 +119,10 @@ const locateLayer = warningLayerNotChosenDecorator(() => {
             </n-space>
 
         </n-card>
-        <LayerItem v-for="item in layerItems"
-                   :style="item.path === selectedLayerPath ? 'background-color: #4ccf50' : ''"
-                   :label="item.label" :checked="item.checked" @click="itemClicked(item.path)"/>
+        <div style="overflow: auto">
+            <LayerItem v-for="item in layerItems" :style="getLayerItemStyle(item)" :label="item.label"
+                :checked="item.checked" @click="itemClicked(item.path)" />
+        </div>
     </n-list>
 </template>
 
