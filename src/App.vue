@@ -1,5 +1,5 @@
 <script setup>
-import Map from "./components/map/MapView.vue";
+import Map from "./components/map/MapViewOL.vue";
 import LeftSideBar from "./components/sidebar_left/LeftSideBar.vue";
 import RightSideBar from "./components/sidebar_right/RightSideBar.vue";
 import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from "naive-ui";
@@ -17,9 +17,9 @@ import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from "n
         <n-dialog-provider>
             <n-message-provider>
                 <div id="container">
-                    <LeftSideBar style="width: 400px" />
+                    <LeftSideBar />
                     <Map style="width: 100%;height: 100%;" />
-                    <RightSideBar style="width: 400px" />
+                    <RightSideBar />
                 </div>
             </n-message-provider>
         </n-dialog-provider>

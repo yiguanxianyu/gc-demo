@@ -2,7 +2,7 @@
 import { NButton, NMenu, NScrollbar, NUpload, useMessage } from 'naive-ui'
 import { useUsersStore } from "@/store/user.js";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import AlgoSetup from "./AlgoSetupCard.vue";
 
 const message = useMessage();
@@ -31,6 +31,22 @@ const switchColorMode = () => {
 const userExit = () => {
     message.error("此功能暂未实现");
 }
+
+
+const testHttpRequest = () => {
+    axios.post(import.meta.env.BACKEND_POST_API, {
+        "request-type": "get-directory",
+    }).then(function (response) {
+        console.log(response);
+        store.data = response.data;
+    }).catch(function (error) {
+        console.log(error);
+    });
+}
+
+onBeforeMount(() => {
+    store.fetchAlgorithmsFromServer();
+})
 </script>
 
 <template>
@@ -46,9 +62,9 @@ const userExit = () => {
         <div id="button_group">
             <n-button @click="switchColorMode">深色模式</n-button>
 
-<!--            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">-->
-                <n-button>上传文件</n-button>
-<!--            </n-upload>-->
+            <!--            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">-->
+            <n-button @click="testHttpRequest">上传文件</n-button>
+            <!--            </n-upload>-->
 
             <n-button @click="userExit">退出</n-button>
         </div>
@@ -60,6 +76,7 @@ const userExit = () => {
 
 <style scoped>
 .container {
+    width: 400px;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
