@@ -34,14 +34,6 @@ const userExit = () => {
 
 
 const testHttpRequest = () => {
-    axios.post(import.meta.env.BACKEND_POST_API, {
-        "request-type": "get-directory",
-    }).then(function (response) {
-        console.log(response);
-        store.data = response.data;
-    }).catch(function (error) {
-        console.log(error);
-    });
 }
 
 onBeforeMount(() => {

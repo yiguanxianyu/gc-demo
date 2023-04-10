@@ -1,14 +1,19 @@
 <script setup>
-import LayerItem from "./LayerPageItem.vue";
-import { NButton, NCard, NList, NSpace, useMessage } from "naive-ui";
+import { NButton, NCard, NTree, NDropdown, NSpace, useMessage } from "naive-ui";
 import { ref } from "vue";
-import { useUsersStore } from "@/store/user";
+import { useUsersStore } from "@/store/user.js";
 import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const store = useUsersStore();
-const { layers: layerItems } = storeToRefs(store)
+const { layers: layerItems, pattern } = storeToRefs(store)
 const selectedLayerPath = ref(null);
+
+const xRef = ref(0);
+const yRef = ref(0);
+const showDropdown = ref(false);
+const options = ref([])
+let selectedItem = null;
 
 const itemClicked = (itemId) => {
     if (itemId === selectedLayerPath.value) {
@@ -18,17 +23,7 @@ const itemClicked = (itemId) => {
     }
 }
 
-const warningLayerNotChosenDecorator = (fn) => {
-    return () => {
-        if (!selectedLayerPath.value) {
-            message.error("请先选择图层");
-            return;
-        }
-        fn();
-    }
-}
-
-const moveUp = warningLayerNotChosenDecorator(() => {
+const moveUp = () => {
     if (layerItems.value[0].path === selectedLayerPath.value) {
         message.error("已经是最上面了");
         return;
@@ -41,9 +36,9 @@ const moveUp = warningLayerNotChosenDecorator(() => {
             break;
         }
     }
-})
+}
 
-const moveDown = warningLayerNotChosenDecorator(() => {
+const moveDown = () => {
     if (layerItems.value[layerItems.value.length - 1].path === selectedLayerPath.value) {
         message.error("已经是最下面了");
         return;
@@ -56,16 +51,16 @@ const moveDown = warningLayerNotChosenDecorator(() => {
             break;
         }
     }
-})
+}
 
-const removeLayer = warningLayerNotChosenDecorator(() => {
+const removeLayer = () => {
     layerItems.value = layerItems.value.filter(item => item.path !== selectedLayerPath.value);
     selectedLayerPath.value = null;
 
     //TODO: remove from leaflet layer
-})
+}
 
-const updateLayerName = warningLayerNotChosenDecorator(() => {
+const updateLayerName = () => {
     const itemToUpdate = layerItems.value.find(item => item.path === selectedLayerPath.value);
     const newLabel = window.prompt("请输入新的名称", itemToUpdate.label);
     if (newLabel === null) {
@@ -76,9 +71,9 @@ const updateLayerName = warningLayerNotChosenDecorator(() => {
     // let dataItemToUpdate = dataItems.value.find(item => item.path === selectedLayerPath.value);
     // dataItemToUpdate.title = newTitle;
     // layerItemToUpdate.title = newTitle;
-})
+}
 
-const toggleDisplay = warningLayerNotChosenDecorator(() => {
+const toggleDisplay = () => {
     for (let i = 0; i < layerItems.value.length; i++) {
         if (layerItems.value[i].path === selectedLayerPath.value) {
             layerItems.value[i].checked = !layerItems.value[i].checked
@@ -86,29 +81,104 @@ const toggleDisplay = warningLayerNotChosenDecorator(() => {
             break
         }
     }
-})
+}
 
-const downloadLayer = warningLayerNotChosenDecorator(() => {
+const downloadLayer = () => {
     message.error("该功能尚未实现");
     //TODO: download
-})
+}
 
-const locateLayer = warningLayerNotChosenDecorator(() => {
+const locateLayer = () => {
     message.error("该功能尚未实现");
     //TODO: locate layer
-})
+}
 
-const getLayerItemStyle = (item) => {
-    const bgColor = item.path === selectedLayerPath.value ? 'background-color: #4ccf50' : '';
-    const wordBreak = ';word-break: break-all'
-    return bgColor + wordBreak;
+
+const nodeProps = ({ option }) => {
+    return {
+        oncontextmenu: (e) => {
+            selectedItem = option;
+            options.value = [{
+                label: "文件：" + option.label,
+                key: 'selected-file',
+                disabled: true
+            }, {
+                label: '向上移动图层',
+                key: 'move-up'
+            }, {
+                label: '向下移动图层',
+                key: 'move-down'
+            }, {
+                label: '切换显示',
+                key: 'toggle-display'
+            }, {
+                label: '定位',
+                key: 'locate-layer'
+            }, {
+                label: '重命名',
+                key: 'rename-file'
+            }, {
+                label: '下载',
+                key: 'download-file'
+            }, {
+                label: '删除',
+                key: 'remove-file'
+            }]
+
+            xRef.value = e.clientX;
+            yRef.value = e.clientY;
+            showDropdown.value = true;
+            e.preventDefault();
+        }
+    }
+}
+
+const handleSelect = (option) => {
+    switch (option) {
+        case 'add-to-layer':
+            addToLayer();
+            break;
+        case 'preview-file':
+            previewFile();
+            break;
+        case 'rename-file':
+            renameFile();
+            break;
+        case 'remove-file':
+            removeFile();
+            break;
+        case 'download-file':
+            downloadFile();
+            break;
+        case 'rename-dir':
+            renameFile();
+            break;
+        case 'remove-dir':
+            removeFile();
+            break;
+        case 'download-dir':
+            downloadFile();
+            break;
+    }
+    console.log(option);
+    showDropdown.value = false;
 }
 </script>
 
 <template>
-    <n-list hoverable clickable>
-        <n-card content-style="padding: 5px;margin: 5px 10px 5px 10px" size="small">
-            <n-space justify="center">
+    <div id="container">
+        <n-tree id="tree" key-field="path" checkable :data="layerItems" :show-irrelevant-nodes="false" :pattern="pattern"
+            :node-props="nodeProps" />
+
+        <n-dropdown trigger="manual" placement="bottom" :show="showDropdown" :options="options" :x="xRef" :y="yRef"
+            @select="handleSelect" @clickoutside="showDropdown = false" />
+
+    </div>
+</template>
+
+<style scoped></style>
+<!-- 
+<n-space justify="center">
                 <n-button class="button" size="tiny" @click="moveDown">↓</n-button>
                 <n-button class="button" size="tiny" @click="moveUp">↑</n-button>
                 <n-button class="button" size="tiny" @click="toggleDisplay">切换显示</n-button>
@@ -116,14 +186,4 @@ const getLayerItemStyle = (item) => {
                 <n-button class="button" size="tiny" @click="removeLayer">删除</n-button>
                 <n-button class="button" size="tiny" @click="downloadLayer">下载</n-button>
                 <n-button class="button" size="tiny" @click="locateLayer">定位</n-button>
-            </n-space>
-
-        </n-card>
-        <div style="overflow: auto">
-            <LayerItem v-for="item in layerItems" :style="getLayerItemStyle(item)" :label="item.label"
-                :checked="item.checked" @click="itemClicked(item.path)" />
-        </div>
-    </n-list>
-</template>
-
-<style scoped></style>
+            </n-space> -->

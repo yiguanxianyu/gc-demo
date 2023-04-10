@@ -1,18 +1,34 @@
 <script setup>
 import { NTabs, NTabPane, NScrollbar } from 'naive-ui'
-import LayerPage from "../layer/LayerPage.vue";
-import DataPage from "../data/DataPage.vue";
+import LayerPage from "../tab_view/LayerPage.vue";
+import DataPage from "../tab_view/DataPage.vue";
+
 </script>
 
 <template>
-    <n-scrollbar>
-        <n-tabs justify-content="space-evenly" type="card" style="padding: 5px;" animated>
-            <n-tab-pane name="layer" tab="图层">
-                <LayerPage />
-            </n-tab-pane>
-            <n-tab-pane name="data" tab="数据管理">
-                <DataPage />
-            </n-tab-pane>
-        </n-tabs>
-    </n-scrollbar>
+    <n-tabs class="data-tab" type="card" animated>
+        <n-tab-pane name="layer" tab="图层">
+            <LayerPage />
+        </n-tab-pane>
+
+        <n-tab-pane name="data" tab="数据管理">
+            <DataPage />
+        </n-tab-pane>
+
+    </n-tabs>
 </template>
+
+<style scoped lang="scss">
+.data-tab {
+    padding: 0;
+    overflow: hidden;
+}
+
+:deep(.n-tabs-pane-wrapper) {
+    overflow-y: auto
+}
+
+:deep(::-webkit-scrollbar) {
+    display: none;
+}
+</style>

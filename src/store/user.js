@@ -9,6 +9,7 @@ export const useUsersStore = defineStore('users', {
             layers: [],
             data: [],
             algorithms: [],
+            pattern: ""
         }
     },
     getters: {
@@ -61,6 +62,7 @@ export const useUsersStore = defineStore('users', {
             return this.layers.find(item => item.path === path);
         },
         addLayer(path) {
+            console.log(path);
             const node = this.findNodeByPath(path);
             this.layers.push({
                 label: node.label,
@@ -80,7 +82,7 @@ export const useUsersStore = defineStore('users', {
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-directory",
             }).then(function (response) {
-                console.log("success");
+                console.log("Successfully fetched directory from server");
                 store.data = response.data;
             }).catch(function (error) {
                 console.log(error);
@@ -91,12 +93,21 @@ export const useUsersStore = defineStore('users', {
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-algorithms",
             }).then(function (response) {
-                console.log("success");
                 store.algorithms = response.data;
-                console.log(store.algorithms);
             }).catch(function (error) {
                 console.log(error);
             });
+        },
+        removeDataItem(path) {
+            axios.post(import.meta.env.VITE_BACKEND_POST_API, {
+                "request-type": "remove-data",
+                "path": path
+            }).then(function (response) {
+                console.log(response);
+                this.fetchDirFromServer();
+            }).catch(function (error) {
+                console.log(error);
+            })
         }
     }
 }
