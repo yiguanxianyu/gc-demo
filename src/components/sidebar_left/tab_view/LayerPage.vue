@@ -13,7 +13,7 @@ const xRef = ref(0);
 const yRef = ref(0);
 const showDropdown = ref(false);
 const options = ref([])
-let selectedItem = null;
+
 
 const itemClicked = (itemId) => {
     if (itemId === selectedLayerPath.value) {
@@ -97,7 +97,7 @@ const locateLayer = () => {
 const nodeProps = ({ option }) => {
     return {
         oncontextmenu: (e) => {
-            selectedItem = option;
+            store.selectedItem = option;
             options.value = [{
                 label: "文件：" + option.label,
                 key: 'selected-file',
@@ -133,11 +133,6 @@ const nodeProps = ({ option }) => {
     }
 }
 
-const renamePath = () => {
-    const newLabel = window.prompt("请输入新的名称", selectedItem.label);
-    if (newLabel === null) return;
-    store.renamePath(selectedItem.path, newLabel);
-}
 
 const handleSelect = (option) => {
     switch (option) {
@@ -154,7 +149,7 @@ const handleSelect = (option) => {
             locateLayer();
             break;
         case 'rename-path':
-            renamePath();
+            store.renamePath();
             break;
         case 'download-path':
             removeFile();

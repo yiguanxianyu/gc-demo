@@ -1,18 +1,19 @@
 <script setup>
 import { NDropdown, NTree, useMessage, useDialog, NScrollbar } from "naive-ui";
-import { onBeforeMount, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useUsersStore } from "@/store/user.js";
 import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const dialog = useDialog();
 const store = useUsersStore();
+
 const { data: dataItems, pattern } = storeToRefs(store);
+
 const xRef = ref(0);
 const yRef = ref(0);
 const showDropdown = ref(false);
-const options = ref([])
-let selectedItem = null;
+const options = ref([]);
 
 onBeforeMount(() => {
     store.fetchDirFromServer();
@@ -24,30 +25,30 @@ const previewFile = () => {
 
 const addToLayer = () => {
     //Check if layer exists
-    if (store.checkLayerExists(selectedItem.path)) {
+    if (store.checkLayerExists(store.selectedItem.path)) {
         message.error("已存在的图层不能重复添加");
         return;
     }
-    store.addLayer(selectedItem.path);
+    store.addLayer(store.selectedItem.path);
     //TODO: add to ol layer
 }
 
 const renamePath = () => {
-    const newLabel = window.prompt("请输入新的名称", selectedItem.label);
+    const newLabel = window.prompt("请输入新的名称", store.selectedItem.label);
     if (newLabel === null) return;
-    store.renamePath(selectedItem.path, newLabel);
+    store.renamePath(store.selectedItem.path, newLabel);
 }
 
 const removePath = () => {
-    console.log(selectedItem);
-    const removeType = selectedItem.children ? "文件夹" : "文件";
+    console.log(store.selectedItem);
+    const removeType = store.selectedItem.children ? "文件夹" : "文件";
     dialog.warning({
         title: `${removeType}删除警告`,
         content: `是否从服务器端永久删除该${removeType}？请注意，此过程是不可逆的！`,
         positiveText: '确定',
         negativeText: '取消',
         onPositiveClick: () => {
-            store.removePath(selectedItem.path);
+            store.removePath(store.selectedItem.path);
             //TODO: delete from leaflet layer and server
             message.error("服务器端删除功能尚未实现");
         }
@@ -61,10 +62,10 @@ const downloadFile = () => {
 const selectedKeyChanged = (keys, option, meta) => {
     switch (meta.action) {
         case 'select':
-            selectedItem = meta.node;
+            store.selectedItem = meta.node;
             break;
         case 'unselect':
-            selectedItem = null;
+            store.selectedItem = null;
             break;
     }
 }
@@ -72,7 +73,7 @@ const selectedKeyChanged = (keys, option, meta) => {
 const nodeProps = ({ option }) => {
     return {
         oncontextmenu: (e) => {
-            selectedItem = option;
+            store.selectedItem = option;
             if (option.children) {
                 options.value = [{
                     label: "目录：" + option.label,
@@ -128,7 +129,7 @@ const handleSelect = (option) => {
             previewFile();
             break;
         case 'rename-path':
-            renamePath();
+            store.renamePath();
             break;
         case 'remove-path':
             removePath();

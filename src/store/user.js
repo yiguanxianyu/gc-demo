@@ -9,7 +9,8 @@ export const useUsersStore = defineStore('users', {
             layers: [],
             data: [],
             algorithms: [],
-            pattern: ""
+            pattern: "",
+            selectedItem: null,
         }
     },
     getters: {
@@ -69,29 +70,25 @@ export const useUsersStore = defineStore('users', {
             });
         },
         fetchDirFromServer() {
-            let store = this;
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-directory",
-            }).then(function (response) {
+            }).then((response) => {
                 console.log("Successfully fetched directory from server");
-                store.data = response.data;
-            }).catch(function (error) {
+                this.data = response.data;
+            }).catch((error) => {
                 console.log(error);
             });
         },
         fetchAlgorithmsFromServer() {
-            let store = this;
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-algorithms",
-            }).then(function (response) {
-                store.algorithms = response.data;
-            }).catch(function (error) {
+            }).then((response) => {
+                this.algorithms = response.data;
+            }).catch((error) => {
                 console.log(error);
             });
         },
         removePath(path) {
-            let store = this;
-
             // 移除图层
             if (this.checkLayerExists(path)) {
                 this.layers = this.layers.filter(item => item.path !== path);
@@ -101,27 +98,24 @@ export const useUsersStore = defineStore('users', {
                 "request-type": "remove-path",
                 "path": path
             }).then((response) => {
-                store.fetchDirFromServer();
-
-            }).catch(function (error) {
+                this.fetchDirFromServer();
+            }).catch((error) => {
                 console.log(error);
             })
         },
-        renamePath(path, name) { 
-            let store = this;
+        renamePath() {
+            const newLabel = window.prompt("请输入新的名称", this.selectedItem.label);
+            if (newLabel === null) return;
 
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "rename-path",
-                "path": path,
-                "new-name": name
+                "path": this.selectedItem.path,
+                "new-name": newLabel
             }).then((response) => {
-                store.fetchDirFromServer();
-
-                let layer = store.checkLayerExists(path);
-                if (layer) {
-                    layer.label = name;
-                }
-            }).catch(function (error) {
+                this.fetchDirFromServer();
+                let layer = this.checkLayerExists(this.selectedItem.path);
+                if (layer) { layer.label = newLabel; }
+            }).catch((error) => {
                 console.log(error);
             })
         }
