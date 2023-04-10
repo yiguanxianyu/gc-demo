@@ -49,15 +49,6 @@ export const useUsersStore = defineStore('users', {
             }
             return node.find(item => item.label === pathArr[pathArr.length - 1]);
         },
-        updateName(path, name) {
-            const node = this.findNodeByPath(path);
-            node.label = name;
-
-            let layer = this.layers.find(item => item.path === path);
-            if (layer) {
-                layer.label = name;
-            }
-        },
         checkLayerExists(path) {
             return this.layers.find(item => item.path === path);
         },
@@ -98,13 +89,38 @@ export const useUsersStore = defineStore('users', {
                 console.log(error);
             });
         },
-        removeDataItem(path) {
+        removePath(path) {
+            let store = this;
+
+            // 移除图层
+            if (this.checkLayerExists(path)) {
+                this.layers = this.layers.filter(item => item.path !== path);
+            }
+
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
-                "request-type": "remove-data",
+                "request-type": "remove-path",
                 "path": path
-            }).then(function (response) {
-                console.log(response);
-                this.fetchDirFromServer();
+            }).then((response) => {
+                store.fetchDirFromServer();
+
+            }).catch(function (error) {
+                console.log(error);
+            })
+        },
+        renamePath(path, name) { 
+            let store = this;
+
+            axios.post(import.meta.env.VITE_BACKEND_POST_API, {
+                "request-type": "rename-path",
+                "path": path,
+                "new-name": name
+            }).then((response) => {
+                store.fetchDirFromServer();
+
+                let layer = store.checkLayerExists(path);
+                if (layer) {
+                    layer.label = name;
+                }
             }).catch(function (error) {
                 console.log(error);
             })

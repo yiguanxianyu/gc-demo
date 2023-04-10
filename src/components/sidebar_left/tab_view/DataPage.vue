@@ -7,8 +7,7 @@ import { storeToRefs } from 'pinia';
 const message = useMessage();
 const dialog = useDialog();
 const store = useUsersStore();
-const { data: dataItems, pattern } = storeToRefs(store)
-const currentHoveredItemText = ref("");
+const { data: dataItems, pattern } = storeToRefs(store);
 const xRef = ref(0);
 const yRef = ref(0);
 const showDropdown = ref(false);
@@ -33,20 +32,22 @@ const addToLayer = () => {
     //TODO: add to ol layer
 }
 
-const renameFile = () => {
+const renamePath = () => {
     const newLabel = window.prompt("请输入新的名称", selectedItem.label);
     if (newLabel === null) return;
-    store.updateName(selectedItem.path, newLabel);
+    store.renamePath(selectedItem.path, newLabel);
 }
 
-const removeFile = () => {
+const removePath = () => {
+    console.log(selectedItem);
+    const removeType = selectedItem.children ? "文件夹" : "文件";
     dialog.warning({
-        title: '文件删除警告',
-        content: '是否从服务器端永久删除该文件？请注意，此过程是不可逆的！',
+        title: `${removeType}删除警告`,
+        content: `是否从服务器端永久删除该${removeType}？请注意，此过程是不可逆的！`,
         positiveText: '确定',
         negativeText: '取消',
         onPositiveClick: () => {
-            store.removeDataItem(selectedItem.path);
+            store.removePath(selectedItem.path);
             //TODO: delete from leaflet layer and server
             message.error("服务器端删除功能尚未实现");
         }
@@ -79,10 +80,10 @@ const nodeProps = ({ option }) => {
                     disabled: true
                 }, {
                     label: '重命名',
-                    key: 'rename-dir'
+                    key: 'rename-path'
                 }, {
                     label: '删除',
-                    key: 'remove-dir'
+                    key: 'remove-path'
                 }, {
                     label: '下载',
                     key: 'download-dir'
@@ -100,10 +101,10 @@ const nodeProps = ({ option }) => {
                     key: 'add-to-layer'
                 }, {
                     label: '重命名',
-                    key: 'rename-file'
+                    key: 'rename-path'
                 }, {
                     label: '删除',
-                    key: 'remove-file'
+                    key: 'remove-path'
                 }, {
                     label: '下载',
                     key: 'download-file'
@@ -126,17 +127,14 @@ const handleSelect = (option) => {
         case 'preview-file':
             previewFile();
             break;
-        case 'rename-file':
-            renameFile();
+        case 'rename-path':
+            renamePath();
             break;
-        case 'remove-file':
-            removeFile();
+        case 'remove-path':
+            removePath();
             break;
         case 'download-file':
             downloadFile();
-            break;
-        case 'rename-dir':
-            renameFile();
             break;
         case 'remove-dir':
             removeFile();

@@ -116,13 +116,13 @@ const nodeProps = ({ option }) => {
                 key: 'locate-layer'
             }, {
                 label: '重命名',
-                key: 'rename-file'
+                key: 'rename-path'
             }, {
                 label: '下载',
                 key: 'download-file'
             }, {
                 label: '删除',
-                key: 'remove-file'
+                key: 'remove-layer'
             }]
 
             xRef.value = e.clientX;
@@ -133,30 +133,33 @@ const nodeProps = ({ option }) => {
     }
 }
 
+const renamePath = () => {
+    const newLabel = window.prompt("请输入新的名称", selectedItem.label);
+    if (newLabel === null) return;
+    store.renamePath(selectedItem.path, newLabel);
+}
+
 const handleSelect = (option) => {
     switch (option) {
-        case 'add-to-layer':
-            addToLayer();
-            break;
-        case 'preview-file':
-            previewFile();
-            break;
-        case 'rename-file':
-            renameFile();
-            break;
-        case 'remove-file':
-            removeFile();
-            break;
-        case 'download-file':
+        case 'move-up':
             downloadFile();
             break;
-        case 'rename-dir':
-            renameFile();
-            break;
-        case 'remove-dir':
+        case 'move-down':
             removeFile();
             break;
-        case 'download-dir':
+        case 'toggle-display':
+            toggleDisplay();
+            break;
+        case 'locate-layer':
+            locateLayer();
+            break;
+        case 'rename-path':
+            renamePath();
+            break;
+        case 'download-path':
+            removeFile();
+            break;
+        case 'remove-layer':
             downloadFile();
             break;
     }
