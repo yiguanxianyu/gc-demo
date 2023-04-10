@@ -7,11 +7,11 @@ import DataPage from "../tab_view/DataPage.vue";
 
 <template>
     <n-tabs class="data-tab" type="card" animated>
-        <n-tab-pane name="layer" tab="图层">
+        <n-tab-pane display-directive="show" name="layer" tab="图层">
             <LayerPage />
         </n-tab-pane>
 
-        <n-tab-pane name="data" tab="数据管理">
+        <n-tab-pane display-directive="show" name="data" tab="数据管理">
             <DataPage />
         </n-tab-pane>
 

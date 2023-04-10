@@ -1,6 +1,6 @@
 <script setup>
 import { NDropdown, NTree, useMessage, useDialog, NScrollbar } from "naive-ui";
-import { onMounted, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { useUsersStore } from "@/store/user.js";
 import { storeToRefs } from 'pinia';
 

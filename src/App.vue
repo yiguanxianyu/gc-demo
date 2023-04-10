@@ -13,7 +13,7 @@ import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from "n
 </script>
 
 <template>
-    <n-config-provider>
+    <n-config-provider inline-theme-disabled>
         <n-dialog-provider>
             <n-message-provider>
                 <div id="container">
