@@ -24,6 +24,12 @@ dependencies:
     version: 3.2.47
 
 devDependencies:
+  '@vicons/fa':
+    specifier: ^0.12.0
+    version: 0.12.0
+  '@vicons/ionicons5':
+    specifier: ^0.12.0
+    version: 0.12.0
   '@vitejs/plugin-vue':
     specifier: ^4.1.0
     version: 4.1.0(vite@4.2.1)(vue@3.2.47)
@@ -277,6 +283,38 @@ packages:
     dev: true
     optional: true
 
+  /@fortawesome/fontawesome-common-types@6.4.0:
+    resolution: {integrity: sha512-HNii132xfomg5QVZw0HwXXpN22s7VBHQBv9CeOu9tfJnhsWQNd2lmTNi8CSrnw5B+5YOmzu1UoPAyxaXsJ6RgQ==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dev: false
+
+  /@fortawesome/fontawesome-svg-core@6.4.0:
+    resolution: {integrity: sha512-Bertv8xOiVELz5raB2FlXDPKt+m94MQ3JgDfsVbrqNpLU9+UE2E18GKjLKw+d3XbeYPqg1pzyQKGsrzbw+pPaw==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.4.0
+    dev: false
+
+  /@fortawesome/free-solid-svg-icons@6.4.0:
+    resolution: {integrity: sha512-kutPeRGWm8V5dltFP1zGjQOEAzaLZj4StdQhWVZnfGFCvAPVvHh8qk5bRrU4KXnRRRNni5tKQI9PBAdI6MP8nQ==}
+    engines: {node: '>=6'}
+    requiresBuild: true
+    dependencies:
+      '@fortawesome/fontawesome-common-types': 6.4.0
+    dev: false
+
+  /@fortawesome/vue-fontawesome@3.0.3(@fortawesome/fontawesome-svg-core@6.4.0)(vue@3.2.47):
+    resolution: {integrity: sha512-KCPHi9QemVXGMrfuwf3nNnNo129resAIQWut9QTAMXmXqL2ErABC6ohd2yY5Ipq0CLWNbKHk8TMdTXL/Zf3ZhA==}
+    peerDependencies:
+      '@fortawesome/fontawesome-svg-core': ~1 || ~6
+      vue: '>= 3.0.0 < 4'
+    dependencies:
+      '@fortawesome/fontawesome-svg-core': 6.4.0
+      vue: 3.2.47
+    dev: false
+
   /@juggle/resize-observer@3.4.0:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
     dev: true
@@ -324,6 +362,14 @@ packages:
 
   /@types/lodash@4.14.192:
     resolution: {integrity: sha512-km+Vyn3BYm5ytMO13k9KTp27O75rbQ0NFw+U//g+PX7VZyjCioXaRFisqSIJRECljcTv73G3i6BpglNGHgUQ5A==}
+    dev: true
+
+  /@vicons/fa@0.12.0:
+    resolution: {integrity: sha512-g2PIeJLsTHUjt6bK63LxqC0uYQB7iu+xViJOxvp1s8b9/akpXVPVWjDTTsP980/0KYyMMe4U7F/aUo7wY+MsXA==}
+    dev: true
+
+  /@vicons/ionicons5@0.12.0:
+    resolution: {integrity: sha512-Iy1EUVRpX0WWxeu1VIReR1zsZLMc4fqpt223czR+Rpnrwu7pt46nbnC2ycO7ItI/uqDLJxnbcMC7FujKs9IfFA==}
     dev: true
 
   /@vitejs/plugin-vue@4.1.0(vite@4.2.1)(vue@3.2.47):

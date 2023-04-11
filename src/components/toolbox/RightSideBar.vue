@@ -1,8 +1,8 @@
 <script setup>
-import {NButton, NMenu, NScrollbar, useMessage} from 'naive-ui'
-import {useUsersStore} from "@/store/user.js";
-import {storeToRefs} from "pinia";
-import {onBeforeMount, ref} from "vue";
+import { NButton, NMenu, NScrollbar, useMessage, NCard } from 'naive-ui'
+import { useUsersStore } from "@/store/user.js";
+import { storeToRefs } from "pinia";
+import { onBeforeMount, ref } from "vue";
 import AlgoSetup from "./AlgoSetupCard.vue";
 
 const message = useMessage();
@@ -33,8 +33,6 @@ const userExit = () => {
 }
 
 
-const testHttpRequest = () => {
-}
 
 onBeforeMount(() => {
     store.fetchAlgorithmsFromServer();
@@ -44,22 +42,20 @@ onBeforeMount(() => {
 <template>
     <div class="container">
 
-        <p id="title">工具箱</p>
+        <n-card id="title" :bordered="false" content-style="background-color:rgba(0,0,0,0)">工具箱</n-card>
 
         <n-scrollbar style="border:1px solid #dddddd;border-radius: 5px;">
             <n-menu default-expand-all :root-indent="12" :indent="18" :options="menuOptions"
                 @update-value="menuValueUpdate" />
         </n-scrollbar>
 
-        <div id="button_group">
+        <!-- <div id="button_group">
             <n-button @click="switchColorMode">深色模式</n-button>
-
-            <!--            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">-->
-            <n-button @click="testHttpRequest">上传文件</n-button>
-            <!--            </n-upload>-->
-
+            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">
+                <n-button>上传文件</n-button>
+            </n-upload>
             <n-button @click="userExit">退出</n-button>
-        </div>
+        </div> -->
 
         <AlgoSetup v-model:visible="showModal" :algo-info="currAlgoInfo" />
 
@@ -74,12 +70,6 @@ onBeforeMount(() => {
     box-sizing: border-box;
     padding: 0 10px 10px 10px;
     text-align: left;
-}
-
-#title {
-    padding-left: 10px;
-    font-size: 1.2em;
-    font-weight: bold;
 }
 
 #button_group {

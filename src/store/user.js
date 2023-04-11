@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { h } from 'vue'
+import { NIcon } from "naive-ui";
+import { Folder, FolderOpenOutline, FileTrayFullOutline } from "@vicons/ionicons5";
 
 // 第一个参数是应用程序中 store 的唯一 id
 export const useUsersStore = defineStore('users', {
@@ -69,12 +72,35 @@ export const useUsersStore = defineStore('users', {
                 checked: true
             });
         },
+        addTreePrefixSuffix(tree) {
+            const traverseTree = node => {
+                if (node.children) {
+                    for (let child of node.children) {
+                        traverseTree(child);
+                    }
+                    node.prefix = () => h(NIcon, null, {
+                        default: () => h(Folder)
+                    });
+                } else {
+                    node.prefix = () => h(NIcon, null, {
+                        default: () => h(FileTrayFullOutline)
+                    });
+                }
+            }
+
+            for (let node of tree) {
+                console.log('node:', node)
+                const temp = traverseTree(node);
+            }
+
+            return tree;
+        },
         fetchDirFromServer() {
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-directory",
             }).then((response) => {
                 console.log("Successfully fetched directory from server");
-                this.data = response.data;
+                this.data = this.addTreePrefixSuffix(response.data);
             }).catch((error) => {
                 console.log(error);
             });

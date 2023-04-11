@@ -1,8 +1,20 @@
+<template>
+    <div id="container">
+        <n-tree class="tree" key-field="path" expand-on-click selectable @update:selected-keys="selectedKeyChanged"
+            :data="dataItems" :show-irrelevant-nodes="false" :pattern="pattern" :node-props="nodeProps"
+            @update:expanded-keys="updatePrefixWithExpaned" />
+        <n-dropdown trigger="manual" placement="bottom" :show="showDropdown" :options="options" :x="xRef" :y="yRef"
+            @select="handleSelect" @clickoutside="showDropdown = false" />
+
+    </div>
+</template>
+
 <script setup>
-import {NDropdown, NTree, useDialog, useMessage} from "naive-ui";
-import {onBeforeMount, ref} from "vue";
-import {useUsersStore} from "@/store/user.js";
-import {storeToRefs} from 'pinia';
+import { Folder, FolderOpenOutline } from "@vicons/ionicons5";
+import { NDropdown, NTree, useDialog, NIcon, useMessage } from "naive-ui";
+import { onBeforeMount, ref, h } from "vue";
+import { useUsersStore } from "@/store/user.js";
+import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const dialog = useDialog();
@@ -69,6 +81,24 @@ const selectedKeyChanged = (keys, option, meta) => {
             break;
     }
 }
+
+const updatePrefixWithExpaned = (_keys, _option, meta) => {
+    if (!meta.node)
+        return;
+    switch (meta.action) {
+        case "expand":
+            meta.node.prefix = () => h(NIcon, null, {
+                default: () => h(FolderOpenOutline)
+            });
+            break;
+        case "collapse":
+            meta.node.prefix = () => h(NIcon, null, {
+                default: () => h(Folder)
+            });
+            break;
+    }
+};
+
 
 const nodeProps = ({ option }) => {
     return {
@@ -151,15 +181,7 @@ const handleSelect = (option) => {
 }
 </script>
 
-<template>
-    <div id="container">
-        <n-tree class="tree" key-field="path" expand-on-click selectable @update:selected-keys="selectedKeyChanged"
-            :data="dataItems" :show-irrelevant-nodes="false" :pattern="pattern" :node-props="nodeProps" />
-        <n-dropdown trigger="manual" placement="bottom" :show="showDropdown" :options="options" :x="xRef" :y="yRef"
-            @select="handleSelect" @clickoutside="showDropdown = false" />
 
-    </div>
-</template>
 
 <style scoped lang="scss">
 .button {
@@ -167,8 +189,6 @@ const handleSelect = (option) => {
 }
 
 :deep(.n-tree-node-indent) {
-    content: "";
-    display: block;
     width: 4px;
 }
 </style>

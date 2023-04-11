@@ -10,6 +10,9 @@ import ImageLayer from 'ol/layer/Image';
 import XYZ from 'ol/source/XYZ'
 import Static from 'ol/source/ImageStatic';
 import GeoTIFFSource from 'ol/source/GeoTIFF';
+import Zoom from 'ol/control/Zoom';
+import FullScreen from 'ol/control/FullScreen';
+import Attribution from 'ol/control/Attribution'
 import 'ol/ol.css'
 
 let map;
@@ -18,7 +21,7 @@ const tileLayer = new TileLayer({
     title: '天地图卫星影像',
     source: new XYZ({
         url: "https://t4.tianditu.gov.cn/DataServer?T=img_w&x={x}&y={y}&l={z}&tk=" + import.meta.env.VITE_API_KEY,
-        attributions: ['Map data &copy; <a href="https://www.tianditu.gov.cn/">天地图</a>', 'made by yiguanxianyu'],
+        attributions: ['Map data &copy; <a href="https://www.tianditu.gov.cn/">天地图</a>'],
     })
 })
 // 标注图层
@@ -88,7 +91,12 @@ onMounted(() => {
         target: 'map',
         layers: [tileLayer, tileMark],
         view: view,
+        controls: []
     });
+
+    map.addControl(new Zoom());
+    map.addControl(new Attribution());
+
     addPngLayerTest()
 
 })
@@ -96,7 +104,40 @@ onMounted(() => {
 </script>
 
 <template>
-    <div id="map" class="map-home"></div>
+    <div id="map"></div>
 </template>
 
-<style scoped></style>
+<style>
+.ol-zoom {
+    top: 30px;
+    right: 310px;
+    bottom: unset;
+    left: unset;
+    background-color: #e0e0e0;
+}
+
+.ol-attribution {
+    top: 5px;
+    right: 310px;
+    bottom: unset;
+    left: unset;
+    background-color: #e0e0e0;
+}
+
+.ol-attribution ul {
+    text-shadow: unset;
+    font-weight: 600
+}
+
+.ol-attribution a {
+    color: #2669dd;
+}
+
+
+
+#map {
+    --ol-background-color: rgba(33, 33, 33, 0.95);
+    --ol-subtle-foreground-color: #ffffff;
+    --ol-partial-background-color: #f0f0f0
+}
+</style>
