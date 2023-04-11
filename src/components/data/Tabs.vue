@@ -1,7 +1,7 @@
 <script setup>
 import { NTabPane, NTabs } from 'naive-ui'
-import LayerPage from "../tab_page/LayerPage.vue";
-import DataPage from "../tab_page/DataPage.vue";
+import LayerPage from "./tab_page/LayerPage.vue";
+import DataPage from "./tab_page/DataPage.vue";
 </script>
 
 <template>

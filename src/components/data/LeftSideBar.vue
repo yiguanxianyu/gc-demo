@@ -1,7 +1,5 @@
 <script setup>
-import Header from "./Header.vue";
-import UserInfo from "./views/UserInfo.vue";
-import Tabs from "./views/Tabs.vue";
+import Tabs from "./Tabs.vue";
 import {NInput} from "naive-ui";
 import {useUsersStore} from "@/store/user";
 import {storeToRefs} from 'pinia';

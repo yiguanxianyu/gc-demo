@@ -15,11 +15,11 @@
 </template>
 
 <script setup>
-import MapView from "@/components/map/MapViewOL.vue";
+import MapView from "@/components/map/MapView.vue";
 import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from "naive-ui";
-import LeftSideBar from "@/components/sidebar_left/LeftSideBar.vue";
+import LeftSideBar from "@/components/data/LeftSideBar.vue";
 import RightSideBar from "@/components/toolbox/RightSideBar.vue";
-import Header from "@/components/sidebar_left/Header.vue";
+import Header from "@/components/header/Header.vue";
 import Monitor from "@/components/monitor/Monitor.vue";
 
 
