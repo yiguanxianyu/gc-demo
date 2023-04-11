@@ -1,13 +1,14 @@
 <script setup>
-import { NButton, NMenu, NScrollbar, useMessage, NCard } from 'naive-ui'
-import { useUsersStore } from "@/store/user.js";
-import { storeToRefs } from "pinia";
-import { onBeforeMount, ref } from "vue";
+import {NCard, NIcon, NMenu, NScrollbar, useMessage} from 'naive-ui'
+import {useUsersStore} from "@/store/user.js";
+import {storeToRefs} from "pinia";
+import {onBeforeMount, ref} from "vue";
 import AlgoSetup from "./AlgoSetupCard.vue";
+import {Toolbox} from "@vicons/fa";
 
 const message = useMessage();
 const store = useUsersStore();
-const { algorithms: menuOptions } = storeToRefs(store)
+const {algorithms: menuOptions} = storeToRefs(store)
 
 const currAlgoInfo = ref({})
 const showModal = ref(false)
@@ -32,8 +33,6 @@ const userExit = () => {
     message.error("此功能暂未实现");
 }
 
-
-
 onBeforeMount(() => {
     store.fetchAlgorithmsFromServer();
 })
@@ -42,11 +41,16 @@ onBeforeMount(() => {
 <template>
     <div class="container">
 
-        <n-card id="title" :bordered="false" content-style="background-color:rgba(0,0,0,0)">工具箱</n-card>
+        <n-card :bordered="false" content-style="font-size:20px;text-align:
+        center;line-height:40px;margin:0;padding:0;background-color=rgba(0,0,0,0)" size="small"
+                style="position: relative;background-color:rgba(0,0,0,0)">
+            <n-icon :component="Toolbox" style="vertical-align: middle"/>
+            工具箱
+        </n-card>
 
         <n-scrollbar style="border:1px solid #dddddd;border-radius: 5px;">
-            <n-menu default-expand-all :root-indent="12" :indent="18" :options="menuOptions"
-                @update-value="menuValueUpdate" />
+            <n-menu :indent="18" :options="menuOptions" :root-indent="12" default-expand-all
+                    @update-value="menuValueUpdate"/>
         </n-scrollbar>
 
         <!-- <div id="button_group">
@@ -57,7 +61,7 @@ onBeforeMount(() => {
             <n-button @click="userExit">退出</n-button>
         </div> -->
 
-        <AlgoSetup v-model:visible="showModal" :algo-info="currAlgoInfo" />
+        <AlgoSetup v-model:visible="showModal" :algo-info="currAlgoInfo"/>
 
     </div>
 </template>

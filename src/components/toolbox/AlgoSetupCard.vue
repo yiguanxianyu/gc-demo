@@ -14,7 +14,7 @@ import ArgForm from "@/components/toolbox/ArgForm.vue";
 
 const message = useMessage();
 const store = useUsersStore();
-const { algorithms: menuOptions } = storeToRefs(store)
+const {algorithms: menuOptions} = storeToRefs(store)
 
 defineProps({
     visible: Boolean,
@@ -38,16 +38,17 @@ const userCanceled = () => {
 </script>
 
 <template>
-    <n-modal :show="visible" :mask-closable="false" @update:show="closeModal">
-        <n-card style="width:800px" size="huge" role="dialog" aria-modal="true" :title="algoInfo.label" :bordered="false">
+    <n-modal :mask-closable="false" :show="visible" @update:show="closeModal">
+        <n-card :bordered="false" :title="algoInfo.label" aria-modal="true" role="dialog" size="huge"
+                style="width:800px">
             <template #header-extra>
-                <n-button type="primary" @click="userCanceled" style="margin: 5px">取消</n-button>
+                <n-button style="margin: 5px" type="primary" @click="userCanceled">取消</n-button>
                 <n-button type="primary" @click="userConfirmed">执行</n-button>
             </template>
 
             <div id="container">
                 <n-card id="algo_text" style="white-space: pre-line">{{ algoInfo.text }}</n-card>
-                <ArgForm v-model:arg-array="algoInfo.arguments" style="width: 250px" />
+                <ArgForm v-model:arg-array="algoInfo.arguments" style="width: 250px"/>
             </div>
         </n-card>
     </n-modal>

@@ -1,17 +1,16 @@
 <script setup>
 import axios from 'axios';
-import { onMounted } from "vue";
+import {onMounted} from "vue";
 
 import Map from 'ol/Map'
 import View from 'ol/View';
-import { fromLonLat } from 'ol/proj';
+import {fromLonLat} from 'ol/proj';
 import TileLayer from 'ol/layer/Tile';
 import ImageLayer from 'ol/layer/Image';
 import XYZ from 'ol/source/XYZ'
 import Static from 'ol/source/ImageStatic';
 import GeoTIFFSource from 'ol/source/GeoTIFF';
 import Zoom from 'ol/control/Zoom';
-import FullScreen from 'ol/control/FullScreen';
 import Attribution from 'ol/control/Attribution'
 import 'ol/ol.css'
 
@@ -70,10 +69,10 @@ const addTiffLayerTest = () => {
 
     let reader = new FileReader();
     reader.readAsArrayBuffer("@/assets/1.tif");
-    const fileBlob = new Blob([reader.result], { type: "image/tiff" });
+    const fileBlob = new Blob([reader.result], {type: "image/tiff"});
 
     const testSource = new GeoTIFFSource({
-        sources: [{ blob: fileBlob }],
+        sources: [{blob: fileBlob}],
         convertToRGB: true,
         normalize: true
     })
@@ -132,7 +131,6 @@ onMounted(() => {
 .ol-attribution a {
     color: #2669dd;
 }
-
 
 
 #map {

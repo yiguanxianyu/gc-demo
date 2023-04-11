@@ -1,13 +1,14 @@
 <template>
     <n-dialog-provider>
         <n-message-provider>
-            <n-config-provider inline-theme-disabled :theme="darkTheme" :theme-overrides="themeOverrides">
+            <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
+                <!-- inline-theme-disabled-->
                 <div id="app">
-                    <MapView id="map" />
-                    <Header id="title-card" />
-                    <LeftSideBar id="floating-panel-left" />
-                    <RightSideBar id="floating-panel-right" />
-                    <Monitor id="floating-panel-monitor" />
+                    <MapView id="map"/>
+                    <Header id="title-card"/>
+                    <LeftSideBar id="floating-panel-left"/>
+                    <RightSideBar id="floating-panel-right"/>
+                    <Monitor id="floating-panel-monitor"/>
                 </div>
             </n-config-provider>
         </n-message-provider>
@@ -16,7 +17,7 @@
 
 <script setup>
 import MapView from "@/components/map/MapView.vue";
-import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from "naive-ui";
+import {darkTheme, NConfigProvider, NDialogProvider, NMessageProvider} from "naive-ui";
 import LeftSideBar from "@/components/data/LeftSideBar.vue";
 import RightSideBar from "@/components/toolbox/RightSideBar.vue";
 import Header from "@/components/header/Header.vue";

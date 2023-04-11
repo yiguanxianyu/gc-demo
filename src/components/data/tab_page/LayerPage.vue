@@ -1,24 +1,25 @@
 <template>
     <div id="container">
-        <n-tree id="tree" key-field="path" checkable :data="layerItems" :show-irrelevant-nodes="false" :pattern="pattern"
-            :node-props="nodeProps"  />
+        <n-tree id="tree" :data="layerItems" :node-props="nodeProps" :pattern="pattern" :show-irrelevant-nodes="false"
+                checkable
+                key-field="path"/>
 
-        <n-dropdown trigger="manual" placement="bottom" :show="showDropdown" :options="options" :x="xRef" :y="yRef"
-            @select="handleSelect" @clickoutside="showDropdown = false" />
+        <n-dropdown :options="options" :show="showDropdown" :x="xRef" :y="yRef" placement="bottom" trigger="manual"
+                    @clickoutside="showDropdown = false" @select="handleSelect"/>
 
     </div>
 </template>
 
 <script setup>
-import { NDropdown, NTree, NIcon, useMessage } from "naive-ui";
-import { ref } from "vue";
-import { useUsersStore } from "@/store/user.js";
-import { storeToRefs } from 'pinia';
+import {NDropdown, NTree, useMessage} from "naive-ui";
+import {ref} from "vue";
+import {useUsersStore} from "@/store/user.js";
+import {storeToRefs} from 'pinia';
 
 
 const message = useMessage();
 const store = useUsersStore();
-const { layers: layerItems, pattern } = storeToRefs(store)
+const {layers: layerItems, pattern} = storeToRefs(store)
 const selectedLayerPath = ref(null);
 
 const xRef = ref(0);
@@ -105,7 +106,7 @@ const locateLayer = () => {
     //TODO: locate layer
 }
 
-const nodeProps = ({ option }) => {
+const nodeProps = ({option}) => {
     return {
         oncontextmenu: (e) => {
             store.selectedItem = option;
@@ -173,7 +174,6 @@ const handleSelect = (option) => {
     showDropdown.value = false;
 }
 </script>
-
 
 
 <style scoped></style>

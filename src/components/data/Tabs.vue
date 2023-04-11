@@ -1,20 +1,29 @@
 <script setup>
-import { NTabPane, NTabs } from 'naive-ui'
+import {NIcon, NTabPane, NTabs} from 'naive-ui';
+import {Database, LayerGroup} from '@vicons/fa';
 import LayerPage from "./tab_page/LayerPage.vue";
 import DataPage from "./tab_page/DataPage.vue";
 </script>
 
 <template>
-  <n-tabs animated class="data-tab" type="card">
-    <n-tab-pane display-directive="show" name="layer" tab="图层">
-      <LayerPage />
-    </n-tab-pane>
+    <n-tabs animated class="data-tab" type="card">
+        <n-tab-pane display-directive="show" name="layer">
+            <LayerPage/>
+            <template #tab>
+                <n-icon :component="LayerGroup"/>
+                &nbsp图层
+            </template>
+        </n-tab-pane>
 
-    <n-tab-pane display-directive="show" name="data" tab="数据管理">
-      <DataPage />
-    </n-tab-pane>
+        <n-tab-pane display-directive="show" name="data">
+            <DataPage/>
+            <template #tab>
+                <n-icon :component="Database"/>
+                &nbsp数据管理
+            </template>
+        </n-tab-pane>
 
-  </n-tabs>
+    </n-tabs>
 </template>
 
 <style lang="scss" scoped>

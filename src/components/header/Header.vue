@@ -1,7 +1,8 @@
 <script setup>
-import { NCard, NIcon } from "naive-ui";
-import { GlobeAsia } from "@vicons/fa";
-import { onMounted, ref } from "vue";
+import {NCard, NIcon} from "naive-ui";
+import {GlobeAsia} from "@vicons/fa";
+import {onMounted, ref} from "vue";
+
 let rotatedAngle = ref(0);
 
 onMounted(() => {
@@ -18,10 +19,11 @@ const getStyle = () => {
 
 <template>
     <div>
-        <n-card size="huge" style="position: relative;"
-            content-style="font-size: 25px;text-align: center;line-height:100px;margin:0;padding:0;">
-            <n-icon :component="GlobeAsia" size="70px"
-                :style="`vertical-align: middle;transform: rotate(${rotatedAngle}deg)`" /> 地理引擎计算系统
+        <n-card content-style="font-size: 25px;text-align: center;line-height:100px;margin:0;padding:0;" size="huge"
+                style="position: relative;">
+            <n-icon :component="GlobeAsia" :style="`vertical-align: middle;transform: rotate(${rotatedAngle}deg)`"
+                    size="70px"/>
+            地理引擎计算系统
         </n-card>
         <div class="version">v0.2-alpha by yiguanxianyu</div>
     </div>

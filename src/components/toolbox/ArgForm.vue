@@ -5,9 +5,9 @@
             message: '请输入',
             trigger: ['input', 'blur']
         }">
-            <n-input v-if="arg.inputType === 'common'" />
-            <n-select v-if="arg.inputType === 'raster'" v-model:value="value" :options="store.getRasterArray" />
-            <n-select v-if="arg.inputType === 'vector'" v-model:value="value" :options="store.getVectorArray" />
+            <n-input v-if="arg.inputType === 'common'"/>
+            <n-select v-if="arg.inputType === 'raster'" v-model:value="value" :options="store.getRasterArray"/>
+            <n-select v-if="arg.inputType === 'vector'" v-model:value="value" :options="store.getVectorArray"/>
         </n-form-item>
     </n-form>
 </template>
