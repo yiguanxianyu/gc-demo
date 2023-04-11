@@ -1,21 +1,21 @@
 <script setup>
 import Header from "./views/Header.vue";
 import UserInfo from "./views/UserInfo.vue";
-import LeftMenu from "./views/LeftMenu.vue";
-import { NInput } from "naive-ui";
-import { useUsersStore } from "@/store/user";
-import { storeToRefs } from 'pinia';
+import Tabs from "./views/Tabs.vue";
+import {NInput} from "naive-ui";
+import {useUsersStore} from "@/store/user";
+import {storeToRefs} from 'pinia';
 
 const store = useUsersStore();
-const { pattern } = storeToRefs(store)
+const {pattern} = storeToRefs(store)
 </script>
 
 <template>
     <div class="container">
         <Header id="title"></Header>
-        <n-input placeholder="搜索" v-model:value="pattern"></n-input>
-        <LeftMenu id="left-menu"></LeftMenu>
-        <UserInfo id="user-info"></UserInfo>
+        <n-input v-model:value="pattern" placeholder="搜索"></n-input>
+        <Tabs id="left-menu"></Tabs>
+        <!-- <UserInfo id="user-info"></UserInfo> -->
     </div>
 </template>
 

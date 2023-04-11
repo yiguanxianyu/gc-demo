@@ -1,5 +1,5 @@
 <script setup>
-import { NLayoutContent, NInput } from "naive-ui";
+import {NInput, NLayoutContent} from "naive-ui";
 
 /**
  * @typedef {Object} arg

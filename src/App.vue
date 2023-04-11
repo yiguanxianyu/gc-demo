@@ -13,17 +13,17 @@ import { NConfigProvider, darkTheme, NMessageProvider, NDialogProvider } from "n
 </script>
 
 <template>
-    <n-config-provider inline-theme-disabled>
-        <n-dialog-provider>
-            <n-message-provider>
+    <n-dialog-provider>
+        <n-message-provider>
+            <n-config-provider inline-theme-disabled :theme="darkTheme">
                 <div id="container">
                     <LeftSideBar />
                     <Map style="width: 100%;height: 100%;" />
                     <RightSideBar />
                 </div>
-            </n-message-provider>
-        </n-dialog-provider>
-    </n-config-provider>
+            </n-config-provider>
+        </n-message-provider>
+    </n-dialog-provider>
 </template>
 
 

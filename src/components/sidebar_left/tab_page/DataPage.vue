@@ -1,8 +1,8 @@
 <script setup>
-import { NDropdown, NTree, useMessage, useDialog, NScrollbar } from "naive-ui";
-import { onBeforeMount, ref } from "vue";
-import { useUsersStore } from "@/store/user.js";
-import { storeToRefs } from 'pinia';
+import {NDropdown, NTree, useDialog, useMessage} from "naive-ui";
+import {onBeforeMount, ref} from "vue";
+import {useUsersStore} from "@/store/user.js";
+import {storeToRefs} from 'pinia';
 
 const message = useMessage();
 const dialog = useDialog();

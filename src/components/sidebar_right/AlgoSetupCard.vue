@@ -7,9 +7,9 @@
  * @property {array} arguments
  */
 
-import { NButton, NModal, NCard, useMessage } from "naive-ui";
-import { storeToRefs } from "pinia";
-import { useUsersStore } from "@/store/user.js";
+import {NButton, NCard, NModal, useMessage} from "naive-ui";
+import {storeToRefs} from "pinia";
+import {useUsersStore} from "@/store/user.js";
 import ArgForm from "@/components/sidebar_right/ArgForm.vue";
 
 const message = useMessage();

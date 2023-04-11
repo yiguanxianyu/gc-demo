@@ -1,10 +1,16 @@
 <script setup>
-import Map from 'ol/Map'
-import TileLayer from 'ol/layer/Tile';
-import View from 'ol/View';
-import XYZ from 'ol/source/XYZ'
-import 'ol/ol.css'
+import axios from 'axios';
 import { onMounted } from "vue";
+
+import Map from 'ol/Map'
+import View from 'ol/View';
+import { fromLonLat } from 'ol/proj';
+import TileLayer from 'ol/layer/Tile';
+import ImageLayer from 'ol/layer/Image';
+import XYZ from 'ol/source/XYZ'
+import Static from 'ol/source/ImageStatic';
+import GeoTIFFSource from 'ol/source/GeoTIFF';
+import 'ol/ol.css'
 
 let map;
 // 影像图层
@@ -24,9 +30,58 @@ const tileMark = new TileLayer({
 })
 
 const view = new View({
-    center: [0, 0],
-    zoom: 2,
+    center: fromLonLat([116.303, 39.99], 'EPSG:3857'),
+    zoom: 16,
+    maxZoom: 18,
 })
+
+const addPngLayerTest = () => {
+
+    axios.get("http://localhost:5000/api/v1/get", {
+        params: {
+            method: "getItemInfo",
+            path: "1.tif"
+        }
+    }).then(res => {
+        console.log(res.data);
+        const thumbnailId = res.data.thumbnailId;
+        const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
+        const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
+        const extent = extent_ws.concat(extent_en);
+        console.log(extent);
+        const testLayer = new ImageLayer({
+            source: new Static({
+                url: "http://localhost:5000/api/v1/get?method=getThumbnail&thumbnailId=" + thumbnailId,
+                imageExtent: extent
+            })
+        })
+        map.addLayer(testLayer);
+        view.fit(extent);
+
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+const addTiffLayerTest = () => {
+
+    let reader = new FileReader();
+    reader.readAsArrayBuffer("@/assets/1.tif");
+    const fileBlob = new Blob([reader.result], { type: "image/tiff" });
+
+    const testSource = new GeoTIFFSource({
+        sources: [{ blob: fileBlob }],
+        convertToRGB: true,
+        normalize: true
+    })
+
+    const testLayer = new ImageLayer({
+        source: testSource
+
+    })
+    map.addLayer(testLayer);
+    view.fit(testSource.getView().getExtent());
+}
 
 onMounted(() => {
     map = new Map({
@@ -34,6 +89,8 @@ onMounted(() => {
         layers: [tileLayer, tileMark],
         view: view,
     });
+    addPngLayerTest()
+
 })
 
 </script>

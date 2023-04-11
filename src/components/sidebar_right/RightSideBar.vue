@@ -1,8 +1,8 @@
 <script setup>
-import { NButton, NMenu, NScrollbar, NUpload, useMessage } from 'naive-ui'
-import { useUsersStore } from "@/store/user.js";
-import { storeToRefs } from "pinia";
-import { onBeforeMount, ref } from "vue";
+import {NButton, NMenu, NScrollbar, useMessage} from 'naive-ui'
+import {useUsersStore} from "@/store/user.js";
+import {storeToRefs} from "pinia";
+import {onBeforeMount, ref} from "vue";
 import AlgoSetup from "./AlgoSetupCard.vue";
 
 const message = useMessage();

@@ -13,9 +13,9 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useMessage, NForm, NFormItem, NInput, NSelect } from "naive-ui";
-import { useUsersStore } from "@/store/user.js";
+import {ref} from "vue";
+import {NForm, NFormItem, NInput, NSelect} from "naive-ui";
+import {useUsersStore} from "@/store/user.js";
 
 const store = useUsersStore();
 const value = ref("")
