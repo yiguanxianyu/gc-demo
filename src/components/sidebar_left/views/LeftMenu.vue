@@ -1,7 +1,7 @@
 <script setup>
 import { NTabs, NTabPane, NScrollbar } from 'naive-ui'
-import LayerPage from "../tab_view/LayerPage.vue";
-import DataPage from "../tab_view/DataPage.vue";
+import LayerPage from "../tab_page/LayerPage.vue";
+import DataPage from "../tab_page/DataPage.vue";
 
 </script>
 
