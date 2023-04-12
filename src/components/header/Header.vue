@@ -10,9 +10,8 @@ onMounted(() => {
 });
 
 const getStyle = () => {
-    setTimeout(() => {
+    setInterval(() => {
         rotatedAngle.value += 0.2;
-        getStyle();
     }, 20);
 };
 </script>

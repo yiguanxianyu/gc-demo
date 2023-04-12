@@ -27,7 +27,7 @@ import Monitor from "@/components/monitor/Monitor.vue";
 const themeOverrides = {
     Statistic: {
         "labelFontSize": "12px",
-        "valueFontSize": "13px"
+        "valueFontSize": "12px"
     }
 }
 
