@@ -2,7 +2,77 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { h } from 'vue'
 import { NIcon } from "naive-ui";
-import { Folder, FolderOpenOutline, FileTrayFullOutline } from "@vicons/ionicons5";
+import { Folder, FileTrayFullOutline } from "@vicons/ionicons5";
+import View from 'ol/View';
+import ImageLayer from 'ol/layer/Image';
+import LayerGroup from 'ol/layer/Group';
+import { fromLonLat } from 'ol/proj';
+import Static from 'ol/source/ImageStatic';
+
+const addPngLayerTest = () => {
+    axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
+        params: {
+            method: "getItemInfo",
+            path: "1.tif"
+        }
+    }).then(res => {
+        // console.log(res.data);
+        const thumbnailId = res.data.thumbnailId;
+        const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
+        const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
+        const extent = extent_ws.concat(extent_en);
+        // console.log(extent);
+        const testLayer1 = new ImageLayer({
+            source: new Static({
+                url: "http://localhost:5000/api/v1/get?method=getThumbnail&thumbnailId=" + thumbnailId,
+                imageExtent: extent
+            })
+        })
+        const testLayer2 = new ImageLayer({
+            source: new Static({
+                url: "http://localhost:5000/api/v1/get?method=getThumbnail&thumbnailId=" + thumbnailId,
+                imageExtent: extent
+            })
+        })
+        map.addLayer(testLayer1);
+        map.addLayer(testLayer2);
+        view.fit(extent);
+        testLayer1.shit = 1;
+        console.log(map.getLayers());
+
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+const addImageLayer = (path) => {
+    axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
+        params: {
+            method: "getItemInfo",
+            path: path
+        }
+    }).then(res => {
+        const thumbnailId = res.data.thumbnailId;
+        const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
+        const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
+        const extent = extent_ws.concat(extent_en);
+
+        const source = new Static({
+            url: import.meta.env.VITE_BACKEND_POST_API + "/get?method=getThumbnail&thumbnailId=" + thumbnailId,
+            imageExtent: extent
+        })
+
+        const layer = new ImageLayer({ source })
+        map.addLayer(layer);
+        view.fit(extent);
+
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+
+
 
 // 第一个参数是应用程序中 store 的唯一 id
 export const useUsersStore = defineStore('users', {
@@ -10,13 +80,22 @@ export const useUsersStore = defineStore('users', {
     state: () => {
         return {
             layers: [],
+            layerGroup: new LayerGroup({}),
             data: [],
             algorithms: [],
             pattern: "",
             selectedItem: null,
+            view: new View({
+                center: fromLonLat([116.303, 39.99], 'EPSG:3857'),
+                zoom: 8,
+                maxZoom: 18,
+            })
         }
     },
     getters: {
+        getLayerTree(state) {
+            return state.layerGroup.getLayers().getArray().map(item => item._state);
+        },
         getVectorArray(state) {
             let vectorArray = [];
             state.data.forEach(item => {
@@ -43,6 +122,10 @@ export const useUsersStore = defineStore('users', {
     },
     actions: {
         findNodeByPath(path) {
+            const node = this.findNodeParentByPath(path);
+            return node.find(item => item.label === pathArr[pathArr.length - 1]);
+        },
+        findNodeParentByPath(path) {
             const pathArr = path.split('/');
             let node = this.data;
             let found;
@@ -51,26 +134,49 @@ export const useUsersStore = defineStore('users', {
                 found = node.find(item => item.label === pathArr[i]);
                 node = found.children;
             }
-            return node.find(item => item.label === pathArr[pathArr.length - 1]);
+            return node;
         },
         checkLayerExists(path) {
-            return this.layers.find(item => item.path === path);
+            /**
+             * 返回的是目标Layer或者false
+             * @param {String} path
+             */
+            return this.layerGroup.getLayers().getArray().find(item => {
+                item._state.path === path
+            })
         },
-        addLayer(path) {
-            console.log(path);
-            const node = this.findNodeByPath(path);
-            this.layers.push({
-                label: node.label,
-                path: path,
-                checked: true
-            });
+        addLayer() {
+            axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
+                params: {
+                    method: "getItemInfo",
+                    path: "1.tif"
+                }
+            }).then(res => {
+                const thumbnailId = res.data.thumbnailId;
+                const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
+                const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
+                const extent = extent_ws.concat(extent_en);
+
+                const layerToAdd = new ImageLayer({
+                    source: new Static({
+                        url: import.meta.env.VITE_BACKEND_POST_API + "/get?method=getThumbnail&thumbnailId=" + thumbnailId,
+                        imageExtent: extent
+                    })
+                })
+                layerToAdd._state = {
+                    label: this.selectedItem.label,
+                    path: this.selectedItem.path,
+                    checked: true
+                }
+                this.layerGroup.getLayers().push(layerToAdd);
+                this.view.fit(extent);
+            }).catch(err => {
+                console.log(err);
+            })
         },
-        addLayerItem(layerItem) {
-            this.layers.push({
-                label: layerItem.label,
-                path: layerItem.path,
-                checked: true
-            });
+        setLayerVisibility(path, visibility) {
+            const layer = this.checkLayerExists(path);
+            layer.setVisible(visibility);
         },
         addTreePrefixSuffix(tree) {
             const traverseTree = node => {
@@ -89,8 +195,7 @@ export const useUsersStore = defineStore('users', {
             }
 
             for (let node of tree) {
-                console.log('node:', node)
-                const temp = traverseTree(node);
+                traverseTree(node);
             }
 
             return tree;
@@ -99,7 +204,7 @@ export const useUsersStore = defineStore('users', {
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-directory",
             }).then((response) => {
-                console.log("Successfully fetched directory from server");
+                // console.log("Successfully fetched directory from server");
                 this.data = this.addTreePrefixSuffix(response.data);
             }).catch((error) => {
                 console.log(error);
@@ -116,15 +221,15 @@ export const useUsersStore = defineStore('users', {
         },
         removePath(path) {
             // 移除图层
-            if (this.checkLayerExists(path)) {
-                this.layers = this.layers.filter(item => item.path !== path);
-            }
+            this.layerGroup.getLayers().remove(this.checkLayerExists(path));
 
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "remove-path",
                 "path": path
             }).then((response) => {
-                this.fetchDirFromServer();
+                const parentArr = this.findNodeParentByPath(path);
+                const index = parentArr.findIndex(item => item.path === path);
+                parentArr.splice(index, 1);
             }).catch((error) => {
                 console.log(error);
             })
@@ -140,7 +245,7 @@ export const useUsersStore = defineStore('users', {
             }).then((response) => {
                 this.fetchDirFromServer();
                 let layer = this.checkLayerExists(this.selectedItem.path);
-                if (layer) { layer.label = newLabel; }
+                if (layer) { layer._state.label = newLabel; }
             }).catch((error) => {
                 console.log(error);
             })

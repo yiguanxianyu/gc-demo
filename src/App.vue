@@ -16,8 +16,8 @@
 </template>
 
 <script setup>
-import MapView from "@/components/map/MapView.vue";
 import {darkTheme, NConfigProvider, NDialogProvider, NMessageProvider} from "naive-ui";
+import MapView from "@/components/map/MapView.vue";
 import LeftSideBar from "@/components/data/LeftSideBar.vue";
 import RightSideBar from "@/components/toolbox/RightSideBar.vue";
 import Header from "@/components/header/Header.vue";
@@ -27,7 +27,7 @@ import Monitor from "@/components/monitor/Monitor.vue";
 const themeOverrides = {
     Statistic: {
         "labelFontSize": "12px",
-        "valueFontSize": "12px"
+        "valueFontSize": "13px"
     }
 }
 

@@ -1,7 +1,7 @@
 <template>
     <div id="container">
-        <n-tree id="tree" :data="layerItems" :node-props="nodeProps" :pattern="pattern" :show-irrelevant-nodes="false"
-            checkable key-field="path" />
+        <n-tree id="tree" :data="store.getLayerTree" :node-props="nodeProps" :pattern="pattern"
+            :show-irrelevant-nodes="false" checkable key-field="path" />
 
         <n-dropdown :options="options" :show="showDropdown" :x="xRef" :y="yRef" placement="bottom" trigger="manual"
             @clickoutside="showDropdown = false" @select="handleSelect" />
@@ -169,7 +169,6 @@ const handleSelect = (option) => {
             downloadFile();
             break;
     }
-    console.log(option);
     showDropdown.value = false;
 }
 </script>

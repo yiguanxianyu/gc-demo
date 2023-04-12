@@ -41,7 +41,7 @@ const addToLayer = () => {
         message.error("已存在的图层不能重复添加");
         return;
     }
-    store.addLayer(store.selectedItem.path);
+    store.addLayer();
     //TODO: add to ol layer
 }
 
@@ -52,7 +52,6 @@ const renamePath = () => {
 }
 
 const removePath = () => {
-    console.log(store.selectedItem);
     const removeType = store.selectedItem.children ? "文件夹" : "文件";
     dialog.warning({
         title: `${removeType}删除警告`,
@@ -61,8 +60,7 @@ const removePath = () => {
         negativeText: '取消',
         onPositiveClick: () => {
             store.removePath(store.selectedItem.path);
-            //TODO: delete from leaflet layer and server
-            message.error("服务器端删除功能尚未实现");
+            //TODO: delete from leaflet layer
         }
     })
 }
