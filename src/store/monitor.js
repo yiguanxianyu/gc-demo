@@ -22,7 +22,7 @@ export const useMonitorStore = defineStore('monitor', {
     actions: {
         autoUpdate() {
             setInterval(() => {
-                axios.get("http://127.0.0.1:5000/api/v1/get/monitor").then(res => {
+                axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get/monitor").then(res => {
                     this.numImages = res.data.numImages;
                     this.numVectors = res.data.numVectors;
                     this.numAlgorithms = res.data.numAlgorithms;

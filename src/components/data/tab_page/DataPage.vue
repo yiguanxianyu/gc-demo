@@ -1,26 +1,26 @@
 <template>
     <div id="container">
         <n-tree :data="dataItems" :node-props="nodeProps" :pattern="pattern" :show-irrelevant-nodes="false" class="tree"
-                expand-on-click key-field="path" selectable @update:selected-keys="selectedKeyChanged"
-                @update:expanded-keys="updatePrefixWithExpaned"/>
+            expand-on-click key-field="path" selectable @update:selected-keys="selectedKeyChanged"
+            @update:expanded-keys="updatePrefixWithExpaned" />
         <n-dropdown :options="options" :show="showDropdown" :x="xRef" :y="yRef" placement="bottom" trigger="manual"
-                    @clickoutside="showDropdown = false" @select="handleSelect"/>
+            @clickoutside="showDropdown = false" @select="handleSelect" />
 
     </div>
 </template>
 
 <script setup>
-import {Folder, FolderOpenOutline} from "@vicons/ionicons5";
-import {NDropdown, NIcon, NTree, useDialog, useMessage} from "naive-ui";
-import {h, onBeforeMount, ref} from "vue";
-import {useUsersStore} from "@/store/user.js";
-import {storeToRefs} from 'pinia';
+import { Folder, FolderOpenOutline } from "@vicons/ionicons5";
+import { NDropdown, NIcon, NTree, useDialog, useMessage } from "naive-ui";
+import { h, onBeforeMount, ref } from "vue";
+import { useUsersStore } from "@/store/user.js";
+import { storeToRefs } from 'pinia';
 
 const message = useMessage();
 const dialog = useDialog();
 const store = useUsersStore();
 
-const {data: dataItems, pattern} = storeToRefs(store);
+const { data: dataItems, pattern } = storeToRefs(store);
 
 const xRef = ref(0);
 const yRef = ref(0);
@@ -100,7 +100,7 @@ const updatePrefixWithExpaned = (_keys, _option, meta) => {
 };
 
 
-const nodeProps = ({option}) => {
+const nodeProps = ({ option }) => {
     return {
         oncontextmenu: (e) => {
             store.selectedItem = option;
@@ -184,10 +184,10 @@ const handleSelect = (option) => {
 
 <style lang="scss" scoped>
 .button {
-  padding: 5px;
+    padding: 5px;
 }
 
 :deep(.n-tree-node-indent) {
-  width: 4px;
+    width: 4px;
 }
 </style>
