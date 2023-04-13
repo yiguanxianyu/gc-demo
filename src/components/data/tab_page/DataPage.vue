@@ -59,7 +59,7 @@ const removePath = () => {
         positiveText: '确定',
         negativeText: '取消',
         onPositiveClick: () => {
-            store.removePath(store.selectedItem.path);
+            store.removePath();
             //TODO: delete from leaflet layer
         }
     })

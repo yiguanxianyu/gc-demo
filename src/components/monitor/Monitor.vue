@@ -1,14 +1,32 @@
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import { NGi, NGrid, NIcon, NStatistic } from "naive-ui";
 import { HardwareChip } from "@vicons/ionicons5";
-import { Archive, Desktop, FileImage, Memory, Tools, VectorSquare } from "@vicons/fa";
-import { useMonitorStore } from "@/store/monitor.js";
-import { storeToRefs } from 'pinia';
-const store = useMonitorStore();
-const { numImages, numVectors, numAlgorithms, cpuUsage, gpuUsage, memoryUsage, diskUsage, gpuMemoryUsage } = storeToRefs(store);
+import { Archive, FileImage, Memory, Tools, VectorSquare } from "@vicons/fa";
+import axios from "axios";
+
+const numImages = ref(0);
+const numVectors = ref(0);
+const numAlgorithms = ref(0);
+const cpuUsage = ref(0);
+const gpuUsage = ref(0);
+const memoryUsage = ref(0);
+const diskUsage = ref(0);
+const gpuMemoryUsage = ref(0);
+
 onMounted(() => {
-    store.autoUpdate();
+    setInterval(() => {
+        axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get/monitor").then(res => {
+            numImages.value = res.data.numImages;
+            numVectors.value = res.data.numVectors;
+            numAlgorithms.value = res.data.numAlgorithms;
+            cpuUsage.value = res.data.cpuUsage;
+            memoryUsage.value = res.data.memoryUsage;
+            gpuUsage.value = res.data.gpuUsage;
+            gpuMemoryUsage.value = res.data.gpuMemoryUsage;
+            diskUsage.value = res.data.diskUsage;
+        })
+    }, import.meta.env.VITE_MONITOR_UPDATE_INTERVAL);
 });
 </script>
 

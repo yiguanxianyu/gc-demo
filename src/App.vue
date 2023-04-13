@@ -4,11 +4,11 @@
             <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
                 <!-- inline-theme-disabled-->
                 <div id="app">
-                    <MapView id="map"/>
-                    <Header id="title-card"/>
-                    <LeftSideBar id="floating-panel-left"/>
-                    <RightSideBar id="floating-panel-right"/>
-                    <Monitor id="floating-panel-monitor"/>
+                    <MapView id="map" />
+                    <Header id="title-card" />
+                    <LeftSideBar id="floating-panel-left" />
+                    <RightSideBar id="floating-panel-right" />
+                    <Monitor id="floating-panel-monitor" />
                 </div>
             </n-config-provider>
         </n-message-provider>
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import {darkTheme, NConfigProvider, NDialogProvider, NMessageProvider} from "naive-ui";
+import { darkTheme, NConfigProvider, NDialogProvider, NMessageProvider } from "naive-ui";
 import MapView from "@/components/map/MapView.vue";
 import LeftSideBar from "@/components/data/LeftSideBar.vue";
 import RightSideBar from "@/components/toolbox/RightSideBar.vue";
@@ -28,6 +28,8 @@ const themeOverrides = {
     Statistic: {
         "labelFontSize": "12px",
         "valueFontSize": "13px"
+    }, Card: {
+        "borderRadius": "10px"
     }
 }
 
@@ -51,7 +53,6 @@ const themeOverrides = {
     bottom: 5px;
     left: 5px;
     width: 300px;
-    border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 

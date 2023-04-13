@@ -10,12 +10,12 @@
 </template>
 
 <script setup>
-import { NDropdown, NTree, useMessage } from "naive-ui";
+import { NDropdown, NTree, useMessage, useDialog } from "naive-ui";
 import { ref } from "vue";
 import { useUsersStore } from "@/store/user.js";
 import { storeToRefs } from 'pinia';
 
-
+const dialog = useDialog();
 const message = useMessage();
 const store = useUsersStore();
 const { layers: layerItems, pattern } = storeToRefs(store)
@@ -26,51 +26,6 @@ const yRef = ref(0);
 const showDropdown = ref(false);
 const options = ref([])
 
-
-const itemClicked = (itemId) => {
-    if (itemId === selectedLayerPath.value) {
-        selectedLayerPath.value = null;
-    } else {
-        selectedLayerPath.value = itemId;
-    }
-}
-
-const moveUp = () => {
-    if (layerItems.value[0].path === selectedLayerPath.value) {
-        message.error("已经是最上面了");
-        return;
-    }
-
-    for (let i = 0; i < layerItems.value.length; i++) {
-        if (layerItems.value[i].path === selectedLayerPath.value) {
-            [layerItems.value[i], layerItems.value[i - 1]] = [layerItems.value[i - 1], layerItems.value[i]];
-            //TODO: move up in leaflet layer
-            break;
-        }
-    }
-}
-
-const moveDown = () => {
-    if (layerItems.value[layerItems.value.length - 1].path === selectedLayerPath.value) {
-        message.error("已经是最下面了");
-        return;
-    }
-
-    for (let i = 0; i < layerItems.value.length; i++) {
-        if (layerItems.value[i].path === selectedLayerPath.value) {
-            [layerItems.value[i], layerItems.value[i + 1]] = [layerItems.value[i + 1], layerItems.value[i]];
-            //TODO: move down in leaflet layer
-            break;
-        }
-    }
-}
-
-const removeLayer = () => {
-    layerItems.value = layerItems.value.filter(item => item.path !== selectedLayerPath.value);
-    selectedLayerPath.value = null;
-
-    //TODO: remove from leaflet layer
-}
 
 const updateLayerName = () => {
     const itemToUpdate = layerItems.value.find(item => item.path === selectedLayerPath.value);
@@ -103,6 +58,20 @@ const downloadLayer = () => {
 const locateLayer = () => {
     message.error("该功能尚未实现");
     //TODO: locate layer
+}
+
+const removePath = () => {
+    const removeType = store.selectedItem.children ? "文件夹" : "文件";
+    dialog.warning({
+        title: `${removeType}删除警告`,
+        content: `是否从服务器端永久删除该${removeType}？请注意，此过程是不可逆的！`,
+        positiveText: '确定',
+        negativeText: '取消',
+        onPositiveClick: () => {
+            store.removePath();
+            //TODO: delete from leaflet layer
+        }
+    })
 }
 
 const nodeProps = ({ option }) => {
@@ -148,10 +117,8 @@ const nodeProps = ({ option }) => {
 const handleSelect = (option) => {
     switch (option) {
         case 'move-up':
-            downloadFile();
             break;
         case 'move-down':
-            removeFile();
             break;
         case 'toggle-display':
             toggleDisplay();
@@ -163,10 +130,10 @@ const handleSelect = (option) => {
             store.renamePath();
             break;
         case 'download-path':
-            removeFile();
+            downloadFile();
             break;
         case 'remove-layer':
-            downloadFile();
+            removePath();
             break;
     }
     showDropdown.value = false;

@@ -219,8 +219,9 @@ export const useUsersStore = defineStore('users', {
                 console.log(error);
             });
         },
-        removePath(path) {
+        removePath() {
             // 移除图层
+            const path = this.selectedItem.path;
             this.layerGroup.getLayers().remove(this.checkLayerExists(path));
 
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
