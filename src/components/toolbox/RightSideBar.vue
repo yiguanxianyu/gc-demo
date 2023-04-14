@@ -20,19 +20,6 @@ const menuValueUpdate = (key, item) => {
     }
 }
 
-const beforeUpload = (file) => {
-    message.error("此功能暂未实现");
-    return false;
-}
-
-const switchColorMode = () => {
-    message.error("此功能暂未实现");
-}
-
-const userExit = () => {
-    message.error("此功能暂未实现");
-}
-
 onBeforeMount(() => {
     store.fetchAlgorithmsFromServer();
 })
@@ -53,14 +40,6 @@ onBeforeMount(() => {
                     @update-value="menuValueUpdate"/>
         </n-scrollbar>
 
-        <!-- <div id="button_group">
-            <n-button @click="switchColorMode">深色模式</n-button>
-            <n-upload :max="1" accept=".gpx" @before-upload="beforeUpload">
-                <n-button>上传文件</n-button>
-            </n-upload>
-            <n-button @click="userExit">退出</n-button>
-        </div> -->
-
         <AlgoSetup v-model:visible="showModal" :algo-info="currAlgoInfo"/>
 
     </div>
@@ -68,11 +47,10 @@ onBeforeMount(() => {
 
 <style scoped>
 .container {
-    width: 400px;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    padding: 0 10px 10px 10px;
+    padding: 0 5px 5px 5px;
     text-align: left;
 }
 

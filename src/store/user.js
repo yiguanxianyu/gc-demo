@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { h } from 'vue'
-import { NIcon } from "naive-ui";
+import { NIcon, useMessage } from "naive-ui";
 import { Folder, FileTrayFullOutline } from "@vicons/ionicons5";
 import View from 'ol/View';
 import ImageLayer from 'ol/layer/Image';
@@ -9,70 +9,46 @@ import LayerGroup from 'ol/layer/Group';
 import { fromLonLat } from 'ol/proj';
 import Static from 'ol/source/ImageStatic';
 
-const addPngLayerTest = () => {
-    axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
-        params: {
-            method: "getItemInfo",
-            path: "1.tif"
+const getSomeTree = (state, type) => {
+    if (type === "raster" || type === "vector") {
+        const suffixes = type === "raster" ? ['.tif', '.tiff'] : ['.shp', '.geojson'];
+        const isFileWithValidSuffix = (node) => {
+            return !node.children && suffixes.some(suffix => node.label.endsWith(suffix));
+        };
+
+        const traverse = (node) => {
+            if (node.children) {
+                const filteredChildren = node.children.map(traverse).filter(child => child !== null);
+                return { ...node, children: filteredChildren, disabled: true };
+            } else {
+                return isFileWithValidSuffix(node) ? node : null;
+            }
+        };
+
+        let resultArr = [];
+        for (let node of state.data) {
+            resultArr.push(traverse(node));
         }
-    }).then(res => {
-        // console.log(res.data);
-        const thumbnailId = res.data.thumbnailId;
-        const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
-        const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
-        const extent = extent_ws.concat(extent_en);
-        // console.log(extent);
-        const testLayer1 = new ImageLayer({
-            source: new Static({
-                url: "http://localhost:5000/api/v1/get?method=getThumbnail&thumbnailId=" + thumbnailId,
-                imageExtent: extent
-            })
-        })
-        const testLayer2 = new ImageLayer({
-            source: new Static({
-                url: "http://localhost:5000/api/v1/get?method=getThumbnail&thumbnailId=" + thumbnailId,
-                imageExtent: extent
-            })
-        })
-        map.addLayer(testLayer1);
-        map.addLayer(testLayer2);
-        view.fit(extent);
-        testLayer1.shit = 1;
-        console.log(map.getLayers());
+        return resultArr;
+    } else if (type === "dir") {
+        const traverse = (node) => {
+            if (node.children) {
+                const filteredChildren = node.children.map(traverse).filter(child => child !== null);
+                return { ...node, children: filteredChildren};
+            } else {
+                return null; // 过滤掉所有的文件
+            }
+        };
 
-    }).catch(err => {
-        console.log(err);
-    })
-}
-
-const addImageLayer = (path) => {
-    axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
-        params: {
-            method: "getItemInfo",
-            path: path
+        let resultArr = [];
+        for (let node of state.data) {
+            resultArr.push(traverse(node));
         }
-    }).then(res => {
-        const thumbnailId = res.data.thumbnailId;
-        const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
-        const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
-        const extent = extent_ws.concat(extent_en);
+        console.log(resultArr);
+        return resultArr;
+    }
 
-        const source = new Static({
-            url: import.meta.env.VITE_BACKEND_POST_API + "/get?method=getThumbnail&thumbnailId=" + thumbnailId,
-            imageExtent: extent
-        })
-
-        const layer = new ImageLayer({ source })
-        map.addLayer(layer);
-        view.fit(extent);
-
-    }).catch(err => {
-        console.log(err);
-    })
 }
-
-
-
 
 // 第一个参数是应用程序中 store 的唯一 id
 export const useUsersStore = defineStore('users', {
@@ -84,7 +60,6 @@ export const useUsersStore = defineStore('users', {
             data: [],
             algorithms: [],
             pattern: "",
-            selectedItem: null,
             view: new View({
                 center: fromLonLat([116.303, 39.99], 'EPSG:3857'),
                 zoom: 8,
@@ -93,31 +68,17 @@ export const useUsersStore = defineStore('users', {
         }
     },
     getters: {
-        getLayerTree(state) {
-            return state.layerGroup.getLayers().getArray().map(item => item._state);
+        getLayerList(state) {
+            return state.layerGroup.getLayers().getArray().map(item => item.layerInfo);
         },
-        getVectorArray(state) {
-            let vectorArray = [];
-            state.data.forEach(item => {
-                if (item.type === "vector") {
-                    vectorArray.push({
-                        label: item.title,
-                        value: item.uuid
-                    })
-                }
-            })
-            return vectorArray
-        }, getRasterArray(state) {
-            let rasterArray = [];
-            state.data.forEach(item => {
-                if (item.type === "raster") {
-                    rasterArray.push({
-                        label: item.title,
-                        value: item.uuid
-                    })
-                }
-            })
-            return rasterArray
+        getRasterTree(state) {
+            return getSomeTree(state, "raster");
+        },
+        getVectorTree(state) {
+            return getSomeTree(state, "vector");
+        },
+        getDirTree(state) {
+            return getSomeTree(state, "dir");
         }
     },
     actions: {
@@ -140,16 +101,16 @@ export const useUsersStore = defineStore('users', {
             /**
              * 返回的是目标Layer或者false
              * @param {String} path
-             */
-            return this.layerGroup.getLayers().getArray().find(item => {
-                item._state.path === path
-            })
+            */
+            return this.layerGroup.getLayers().getArray().find(
+                item => item.layerInfo.path === path
+            )
         },
-        addLayer() {
+        addLayer(selectedItem) {
             axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
                 params: {
                     method: "getItemInfo",
-                    path: "1.tif"
+                    path: selectedItem.path
                 }
             }).then(res => {
                 const thumbnailId = res.data.thumbnailId;
@@ -163,20 +124,26 @@ export const useUsersStore = defineStore('users', {
                         imageExtent: extent
                     })
                 })
-                layerToAdd._state = {
-                    label: this.selectedItem.label,
-                    path: this.selectedItem.path,
-                    checked: true
+                layerToAdd.layerInfo = {
+                    label: selectedItem.label,
+                    path: selectedItem.path
                 }
                 this.layerGroup.getLayers().push(layerToAdd);
                 this.view.fit(extent);
-            }).catch(err => {
-                console.log(err);
+            }).catch(error => {
+                console.log(error);
             })
         },
+        removeLayer(path) {
+            this.layerGroup.getLayers().remove(this.checkLayerExists(path));
+        },
         setLayerVisibility(path, visibility) {
-            const layer = this.checkLayerExists(path);
-            layer.setVisible(visibility);
+            this.checkLayerExists(path).setVisible(visibility);
+        },
+        locateLayer(path) {
+            this.view.fit(this.checkLayerExists(path).getSource().getImageExtent(), {
+                duration: 1000
+            });
         },
         addTreePrefixSuffix(tree) {
             const traverseTree = node => {
@@ -204,7 +171,6 @@ export const useUsersStore = defineStore('users', {
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "get-directory",
             }).then((response) => {
-                // console.log("Successfully fetched directory from server");
                 this.data = this.addTreePrefixSuffix(response.data);
             }).catch((error) => {
                 console.log(error);
@@ -219,34 +185,31 @@ export const useUsersStore = defineStore('users', {
                 console.log(error);
             });
         },
-        removePath() {
-            // 移除图层
-            const path = this.selectedItem.path;
-            this.layerGroup.getLayers().remove(this.checkLayerExists(path));
-
+        removePath(path) {
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "remove-path",
                 "path": path
-            }).then((response) => {
+            }).then(res => {
                 const parentArr = this.findNodeParentByPath(path);
                 const index = parentArr.findIndex(item => item.path === path);
                 parentArr.splice(index, 1);
+                this.removeLayer(path);
             }).catch((error) => {
                 console.log(error);
             })
         },
-        renamePath() {
-            const newLabel = window.prompt("请输入新的名称", this.selectedItem.label);
+        renamePath(path, oldLabel) {
+            const newLabel = window.prompt("请输入新的名称", oldLabel);
             if (newLabel === null) return;
 
             axios.post(import.meta.env.VITE_BACKEND_POST_API, {
                 "request-type": "rename-path",
-                "path": this.selectedItem.path,
+                "path": path,
                 "new-name": newLabel
             }).then((response) => {
-                this.fetchDirFromServer();
-                let layer = this.checkLayerExists(this.selectedItem.path);
-                if (layer) { layer._state.label = newLabel; }
+                let layer = this.checkLayerExists(path);
+                if (layer) { layer.layerInfo.label = newLabel; }
+                this.findNodeByPath(path).layerInfo.label = newLabel;
             }).catch((error) => {
                 console.log(error);
             })

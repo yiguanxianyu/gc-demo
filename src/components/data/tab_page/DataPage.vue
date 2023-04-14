@@ -26,6 +26,7 @@ const xRef = ref(0);
 const yRef = ref(0);
 const showDropdown = ref(false);
 const options = ref([]);
+let selectedItem = null;
 
 onBeforeMount(() => {
     store.fetchDirFromServer();
@@ -37,30 +38,23 @@ const previewFile = () => {
 
 const addToLayer = () => {
     //Check if layer exists
-    if (store.checkLayerExists(store.selectedItem.path)) {
+    if (store.checkLayerExists(selectedItem.path)) {
         message.error("已存在的图层不能重复添加");
         return;
     }
-    store.addLayer();
+    store.addLayer(selectedItem);
     //TODO: add to ol layer
 }
 
-const renamePath = () => {
-    const newLabel = window.prompt("请输入新的名称", store.selectedItem.label);
-    if (newLabel === null) return;
-    store.renamePath(store.selectedItem.path, newLabel);
-}
-
 const removePath = () => {
-    const removeType = store.selectedItem.children ? "文件夹" : "文件";
+    const removeType = selectedItem.children ? "文件夹" : "文件";
     dialog.warning({
         title: `${removeType}删除警告`,
         content: `是否从服务器端永久删除该${removeType}？请注意，此过程是不可逆的！`,
         positiveText: '确定',
         negativeText: '取消',
         onPositiveClick: () => {
-            store.removePath();
-            //TODO: delete from leaflet layer
+            store.removePath(selectedItem.path);
         }
     })
 }
@@ -72,10 +66,10 @@ const downloadFile = () => {
 const selectedKeyChanged = (keys, option, meta) => {
     switch (meta.action) {
         case 'select':
-            store.selectedItem = meta.node;
+            selectedItem = meta.node;
             break;
         case 'unselect':
-            store.selectedItem = null;
+            selectedItem = null;
             break;
     }
 }
@@ -101,7 +95,7 @@ const updatePrefixWithExpaned = (_keys, _option, meta) => {
 const nodeProps = ({ option }) => {
     return {
         oncontextmenu: (e) => {
-            store.selectedItem = option;
+            selectedItem = option;
             if (option.children) {
                 options.value = [{
                     label: "目录：" + option.label,
@@ -157,7 +151,7 @@ const handleSelect = (option) => {
             previewFile();
             break;
         case 'rename-path':
-            store.renamePath();
+            store.renamePath(selectedItem.path, selectedItem.label);
             break;
         case 'remove-path':
             removePath();

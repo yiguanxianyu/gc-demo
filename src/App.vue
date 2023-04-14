@@ -30,6 +30,8 @@ const themeOverrides = {
         "valueFontSize": "13px"
     }, Card: {
         "borderRadius": "10px"
+    }, List: {
+        "color": "rgba(0, 0, 0, 0)"
     }
 }
 
