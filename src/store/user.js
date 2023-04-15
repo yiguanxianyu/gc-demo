@@ -4,9 +4,9 @@ import { h } from 'vue'
 import { NIcon, useMessage } from "naive-ui";
 import { Folder, FileTrayFullOutline } from "@vicons/ionicons5";
 import View from 'ol/View';
+import { fromLonLat } from 'ol/proj';
 import ImageLayer from 'ol/layer/Image';
 import LayerGroup from 'ol/layer/Group';
-import { fromLonLat } from 'ol/proj';
 import Static from 'ol/source/ImageStatic';
 
 const getSomeTree = (state, type) => {
@@ -34,7 +34,7 @@ const getSomeTree = (state, type) => {
         const traverse = (node) => {
             if (node.children) {
                 const filteredChildren = node.children.map(traverse).filter(child => child !== null);
-                return { ...node, children: filteredChildren};
+                return { ...node, children: filteredChildren };
             } else {
                 return null; // 过滤掉所有的文件
             }
@@ -61,15 +61,20 @@ export const useUsersStore = defineStore('users', {
             algorithms: [],
             pattern: "",
             view: new View({
-                center: fromLonLat([116.303, 39.99], 'EPSG:3857'),
-                zoom: 8,
+                center: [12946790.737730097, 4864489.213147095],
+                zoom: 6,
                 maxZoom: 18,
             })
         }
     },
     getters: {
         getLayerList(state) {
-            return state.layerGroup.getLayers().getArray().map(item => item.layerInfo);
+            const reversedArr = [];
+            const arr = state.layerGroup.getLayers().getArray();
+            for (let i = state.layerGroup.getLayers().getArray().length - 1; i >= 0; i--) {
+                reversedArr.push(arr[i].layerInfo);
+            }
+            return reversedArr;
         },
         getRasterTree(state) {
             return getSomeTree(state, "raster");
@@ -114,9 +119,7 @@ export const useUsersStore = defineStore('users', {
                 }
             }).then(res => {
                 const thumbnailId = res.data.thumbnailId;
-                const extent_ws = fromLonLat(res.data.extent[0], 'EPSG:3857');
-                const extent_en = fromLonLat(res.data.extent[1], 'EPSG:3857');
-                const extent = extent_ws.concat(extent_en);
+                const extent = res.data.extent;
 
                 const layerToAdd = new ImageLayer({
                     source: new Static({
