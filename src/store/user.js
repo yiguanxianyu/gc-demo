@@ -1,10 +1,9 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { h } from 'vue'
-import { NIcon, useMessage } from "naive-ui";
+import { NIcon } from "naive-ui";
 import { Folder, FileTrayFullOutline } from "@vicons/ionicons5";
 import View from 'ol/View';
-import { fromLonLat } from 'ol/proj';
 import ImageLayer from 'ol/layer/Image';
 import LayerGroup from 'ol/layer/Group';
 import Static from 'ol/source/ImageStatic';
@@ -12,42 +11,27 @@ import Static from 'ol/source/ImageStatic';
 const getSomeTree = (state, type) => {
     if (type === "raster" || type === "vector") {
         const suffixes = type === "raster" ? ['.tif', '.tiff'] : ['.shp', '.geojson'];
-        const isFileWithValidSuffix = (node) => {
-            return !node.children && suffixes.some(suffix => node.label.endsWith(suffix));
-        };
 
         const traverse = (node) => {
             if (node.children) {
                 const filteredChildren = node.children.map(traverse).filter(child => child !== null);
                 return { ...node, children: filteredChildren, disabled: true };
-            } else {
-                return isFileWithValidSuffix(node) ? node : null;
             }
+            const fileWithValidSuffix = suffixes.some(suffix => node.label.toLowerCase().endsWith(suffix))
+            return fileWithValidSuffix ? node : null;
         };
+        return state.data.map(traverse).filter(node => node !== null);
 
-        let resultArr = [];
-        for (let node of state.data) {
-            resultArr.push(traverse(node));
-        }
-        return resultArr;
     } else if (type === "dir") {
         const traverse = (node) => {
             if (node.children) {
                 const filteredChildren = node.children.map(traverse).filter(child => child !== null);
                 return { ...node, children: filteredChildren };
-            } else {
-                return null; // 过滤掉所有的文件
             }
+            return null; // 过滤掉所有的文件
         };
-
-        let resultArr = [];
-        for (let node of state.data) {
-            resultArr.push(traverse(node));
-        }
-        console.log(resultArr);
-        return resultArr;
+        return state.data.map(traverse).filter(node => node !== null);
     }
-
 }
 
 // 第一个参数是应用程序中 store 的唯一 id
@@ -61,7 +45,7 @@ export const useUsersStore = defineStore('users', {
             algorithms: [],
             pattern: "",
             view: new View({
-                center: [12946790.737730097, 4864489.213147095],
+                center: [12946790, 4864489],
                 zoom: 6,
                 maxZoom: 18,
             })
