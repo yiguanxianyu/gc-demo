@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { h } from 'vue'
 import { NIcon } from "naive-ui";
-import { Folder, FileTrayFullOutline } from "@vicons/ionicons5";
+import { FileTrayFullOutline, Folder } from "@vicons/ionicons5";
 import View from 'ol/View';
 import ImageLayer from 'ol/layer/Image';
 import LayerGroup from 'ol/layer/Group';
@@ -40,10 +40,10 @@ export const useUsersStore = defineStore('users', {
     state: () => {
         return {
             layers: [],
-            layerGroup: new LayerGroup({}),
-            data: [],
-            algorithms: [],
-            pattern: "",
+            layerGroup: new LayerGroup({}),//存放图层
+            data: [],//存放文件数据
+            algorithms: [],//存放算法数据
+            pattern: "",//用于搜索的匹配字符串
             view: new View({
                 center: [12946790, 4864489],
                 zoom: 6,
@@ -55,7 +55,7 @@ export const useUsersStore = defineStore('users', {
         getLayerList(state) {
             const reversedArr = [];
             const arr = state.layerGroup.getLayers().getArray();
-            for (let i = state.layerGroup.getLayers().getArray().length - 1; i >= 0; i--) {
+            for (let i = arr.length - 1; i >= 0; i--) {
                 reversedArr.push(arr[i].layerInfo);
             }
             return reversedArr;
@@ -72,17 +72,16 @@ export const useUsersStore = defineStore('users', {
     },
     actions: {
         findNodeByPath(path) {
+            const nodeLabel = path.split('/').pop();
             const node = this.findNodeParentByPath(path);
-            return node.find(item => item.label === pathArr[pathArr.length - 1]);
+            return node.find(item => item.label === nodeLabel);
         },
         findNodeParentByPath(path) {
             const pathArr = path.split('/');
             let node = this.data;
-            let found;
 
             for (let i = 0; i < pathArr.length - 1; i++) {
-                found = node.find(item => item.label === pathArr[i]);
-                node = found.children;
+                node = node.find(item => item.label === pathArr[i]).children;
             }
             return node;
         },
@@ -90,7 +89,7 @@ export const useUsersStore = defineStore('users', {
             /**
              * 返回的是目标Layer或者false
              * @param {String} path
-            */
+             */
             return this.layerGroup.getLayers().getArray().find(
                 item => item.layerInfo.path === path
             )
@@ -134,24 +133,12 @@ export const useUsersStore = defineStore('users', {
         },
         addTreePrefixSuffix(tree) {
             const traverseTree = node => {
-                if (node.children) {
-                    for (let child of node.children) {
-                        traverseTree(child);
-                    }
-                    node.prefix = () => h(NIcon, null, {
-                        default: () => h(Folder)
-                    });
-                } else {
-                    node.prefix = () => h(NIcon, null, {
-                        default: () => h(FileTrayFullOutline)
-                    });
-                }
+                node.children?.forEach(traverseTree)
+                node.prefix = () => h(NIcon, null, {
+                    default: () => h(node.children ? Folder : FileTrayFullOutline)
+                });
             }
-
-            for (let node of tree) {
-                traverseTree(node);
-            }
-
+            tree.forEach(traverseTree);
             return tree;
         },
         fetchDirFromServer() {
@@ -195,7 +182,9 @@ export const useUsersStore = defineStore('users', {
                 "new-name": newLabel
             }).then((response) => {
                 let layer = this.checkLayerExists(path);
-                if (layer) { layer.layerInfo.label = newLabel; }
+                if (layer) {
+                    layer.layerInfo.label = newLabel;
+                }
                 this.findNodeByPath(path).layerInfo.label = newLabel;
             }).catch((error) => {
                 console.log(error);

@@ -40,13 +40,13 @@ const userConfirmed = () => {
         "algo-key": algo.key,
         "params": params
     }).then(res => {
-        message.success('计算成功' + res.data.message);
+        message.success('计算成功\n' + res.data.message);
         store.addLayer({
             label: res.data.label,
             path: res.data.path,
         })
     }).catch(err => {
-        message.error('计算失败');
+        message.error('计算失败\n' + err);
     });
     closeModal();
 }
