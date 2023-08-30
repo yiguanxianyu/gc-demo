@@ -25,29 +25,42 @@ const emit = defineEmits(['update:visible']);
 const closeModal = () => {
     emit('update:visible', false);
 }
+
 const userConfirmed = () => {
     const algo = props.algoInfo;
-    let params = [];
+    let params = {};
+
     for (let i = 0; i < algo.arguments.length; i++) {
         const arg = algo.arguments[i];
-        if (arg.argType === 'output-raster' || arg.argType === 'output-vector') {
-            arg.value = arg.dir + '/' + arg.fileName;
+        if (arg.argType.startsWith('output')) {
+            if (arg.outputName === undefined) {
+                arg.value = arg.dir;
+            } else {
+                arg.value = arg.dir + '/' + arg.outputName;
+            }
         }
-        params.push(arg.value);
+
+        params[arg.label] = arg.value;
     }
-    axios.post(import.meta.env.VITE_BACKEND_POST_API, {
-        "request-type": 'run-algo',
+
+    console.log(algo, params);
+
+    axios.post(import.meta.env.VITE_BACKEND_API + "/post/run", {
         "algo-key": algo.key,
         "params": params
     }).then(res => {
         message.success('计算成功\n' + res.data.message);
-        store.addLayer({
-            label: res.data.label,
-            path: res.data.path,
-        })
+        store.fetchDirFromServer();
+        if (res.data.label !== undefined && res.data.path !== undefined) {
+            store.addLayer({
+                label: res.data.label,
+                path: res.data.path,
+            })
+        }
     }).catch(err => {
         message.error('计算失败\n' + err);
     });
+
     closeModal();
 }
 

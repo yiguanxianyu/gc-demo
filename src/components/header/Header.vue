@@ -20,11 +20,11 @@ const getStyle = () => {
 
 <template>
     <div>
-        <n-card content-style="font-size: 25px;text-align: center;line-height:100px;margin:0;padding:0" size="huge"
+        <n-card content-style="font-size: 26px;text-align: center;line-height:100px;margin:0;padding:0" size="huge"
             style="position: relative;">
             <n-icon :component="GlobeAsia" :style="`vertical-align: middle;transform: rotate(${rotatedAngle}deg)`"
                 size="70px" />
-            地理引擎计算系统
+          地理计算引擎系统
         </n-card>
         <div class="version">{{ version }} by yiguanxianyu</div>
     </div>

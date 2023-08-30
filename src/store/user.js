@@ -8,8 +8,22 @@ import ImageLayer from 'ol/layer/Image';
 import LayerGroup from 'ol/layer/Group';
 import Static from 'ol/source/ImageStatic';
 
-const getSomeTree = (state, type) => {
-    if (type === "raster" || type === "vector") {
+
+const _getSomeTree = (state, type) => {
+
+    if (type.startsWith(".")) {
+        const suffix = type.toLowerCase();
+        const traverse = (node) => {
+            if (node.children) {
+                const filteredChildren = node.children.map(traverse).filter(child => child !== null);
+                return { ...node, children: filteredChildren, disabled: true };
+            }
+            const fileWithValidSuffix = node.label.toLowerCase().endsWith(suffix)
+            return fileWithValidSuffix ? node : null;
+        };
+        return state.data.map(traverse).filter(node => node !== null);
+
+    } else if (type === "raster" || type === "vector") {
         const suffixes = type === "raster" ? ['.tif', '.tiff'] : ['.shp', '.geojson'];
 
         const traverse = (node) => {
@@ -61,13 +75,16 @@ export const useUsersStore = defineStore('users', {
             return reversedArr;
         },
         getRasterTree(state) {
-            return getSomeTree(state, "raster");
+            return _getSomeTree(state, "raster");
         },
         getVectorTree(state) {
-            return getSomeTree(state, "vector");
+            return _getSomeTree(state, "vector");
         },
         getDirTree(state) {
-            return getSomeTree(state, "dir");
+            return _getSomeTree(state, "dir");
+        },
+        getExtTree(state) {
+            return ext => _getSomeTree(state, ext);
         }
     },
     actions: {
@@ -95,9 +112,8 @@ export const useUsersStore = defineStore('users', {
             )
         },
         addLayer(selectedItem) {
-            axios.get(import.meta.env.VITE_BACKEND_POST_API + "/get", {
+            axios.get(import.meta.env.VITE_BACKEND_API + "/get/iteminfo", {
                 params: {
-                    method: "getItemInfo",
                     path: selectedItem.path
                 }
             }).then(res => {
@@ -106,14 +122,33 @@ export const useUsersStore = defineStore('users', {
 
                 const layerToAdd = new ImageLayer({
                     source: new Static({
-                        url: import.meta.env.VITE_BACKEND_POST_API + "/get?method=getThumbnail&thumbnailId=" + thumbnailId,
+                        url: import.meta.env.VITE_BACKEND_API + "/get/thumbnail/?thumbnailId=" + thumbnailId,
                         imageExtent: extent
                     })
                 })
+
+                // Add GeoTIFF Layer but very poor performance
+                // const layerToAdd = new TileLayer({
+                //     source: new GeoTIFF({
+                //         sources: [
+                //             {
+                //                 url: import.meta.env.VITE_BACKEND_API + "/get/thumbnail/?thumbnailId=" + thumbnailId,
+                //                 overviews: [import.meta.env.VITE_BACKEND_API + "/get/ovr/?thumbnailId=" + thumbnailId],
+                //             }
+                //         ],
+                //         sourceOptions: {
+                //             allowFullFile: true
+                //         },
+                //         convertToRGB: true,
+                //         interpolate: false
+                //     })
+                // })
+
                 layerToAdd.layerInfo = {
                     label: selectedItem.label,
                     path: selectedItem.path
                 }
+
                 this.layerGroup.getLayers().push(layerToAdd);
                 this.view.fit(extent);
             }).catch(error => {
@@ -132,6 +167,7 @@ export const useUsersStore = defineStore('users', {
             });
         },
         addTreePrefixSuffix(tree) {
+            // Add prefix icon to tree items
             const traverseTree = node => {
                 node.children?.forEach(traverseTree)
                 node.prefix = () => h(NIcon, null, {
@@ -142,28 +178,28 @@ export const useUsersStore = defineStore('users', {
             return tree;
         },
         fetchDirFromServer() {
-            axios.post(import.meta.env.VITE_BACKEND_POST_API, {
-                "request-type": "get-directory",
-            }).then((response) => {
-                this.data = this.addTreePrefixSuffix(response.data);
-            }).catch((error) => {
-                console.log(error);
-            });
+            // Fetch directory tree from server
+            axios.get(import.meta.env.VITE_BACKEND_API + "/get/directory",)
+                .then((response) => {
+                    this.data = this.addTreePrefixSuffix(response.data);
+                }).catch((error) => {
+                    console.log(error);
+                });
         },
         fetchAlgorithmsFromServer() {
-            axios.post(import.meta.env.VITE_BACKEND_POST_API, {
-                "request-type": "get-algorithms",
-            }).then((response) => {
-                this.algorithms = response.data;
-            }).catch((error) => {
-                console.log(error);
-            });
+            // Fetch algorithms from server
+            axios.get(import.meta.env.VITE_BACKEND_API + "/get/algorithms",)
+                .then((response) => {
+                    this.algorithms = response.data;
+                }).catch((error) => {
+                    console.log(error);
+                });
         },
         removePath(path) {
-            axios.post(import.meta.env.VITE_BACKEND_POST_API, {
-                "request-type": "remove-path",
+            // Remove path from server
+            axios.post(import.meta.env.VITE_BACKEND_API + "/post/remove", {
                 "path": path
-            }).then(res => {
+            }).then((_res) => {
                 const parentArr = this.findNodeParentByPath(path);
                 const index = parentArr.findIndex(item => item.path === path);
                 parentArr.splice(index, 1);
@@ -173,14 +209,14 @@ export const useUsersStore = defineStore('users', {
             })
         },
         renamePath(path, oldLabel) {
+            // Rename some file on server
             const newLabel = window.prompt("请输入新的名称", oldLabel);
             if (newLabel === null) return;
 
-            axios.post(import.meta.env.VITE_BACKEND_POST_API, {
-                "request-type": "rename-path",
+            axios.post(import.meta.env.VITE_BACKEND_API + "/post/rename", {
                 "path": path,
                 "new-name": newLabel
-            }).then((response) => {
+            }).then((_response) => {
                 let layer = this.checkLayerExists(path);
                 if (layer) {
                     layer.layerInfo.label = newLabel;
