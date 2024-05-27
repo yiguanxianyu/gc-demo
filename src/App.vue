@@ -55,6 +55,7 @@ const themeOverrides = {
     bottom: 5px;
     left: 5px;
     width: 300px;
+    height: 110px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
@@ -66,7 +67,7 @@ const themeOverrides = {
     left: 5px;
     padding: 5px;
     width: 300px;
-    max-height: calc(100% - 115px);
+    max-height: calc(100% - 125px);
     border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     background-color: rgba(32, 32, 36, 0.95);

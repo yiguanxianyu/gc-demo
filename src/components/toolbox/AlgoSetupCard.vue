@@ -39,8 +39,11 @@ const userConfirmed = () => {
                 arg.value = arg.dir + '/' + arg.outputName;
             }
         }
-
-        params[arg.label] = arg.value;
+        if (arg.value === undefined) {
+            params[arg.label] = null
+        } else {
+            params[arg.label] = arg.value;
+        }
     }
 
     console.log(algo, params);

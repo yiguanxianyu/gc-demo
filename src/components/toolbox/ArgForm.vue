@@ -2,14 +2,9 @@
     <n-form id="input_form" :model="formValue">
         <!-- item.value是除了文件名之外的写法，item.dir+filename是文件名的写法 -->
         <n-form-item v-for="(item, index) in formValue.args" :label="item.description" :path="`arg[${index}]`">
-            <n-tree-select v-if="item.argType === 'input-raster'" v-model:value="item.value" :options="store.getRasterTree"
-                key-field="path" filterable :consistent-menu-width="false" />
-
-            <n-tree-select v-if="item.argType === 'input-file'" v-model:value="item.value" :options="getExtTree(item.ext)"
-                key-field="path" filterable :consistent-menu-width="false" />
-
-            <n-tree-select ref="treeRef" v-if="item.argType === 'output-raster'" v-model:value="item.dir" key-field="path"
-                :options="store.getDirTree" filterable default-expand-all :consistent-menu-width="false">
+            <n-tree-select v-if="item.argType === 'input-file'" v-model:value="item.value"
+                :options="getExtTree(item.ext)" key-field="path" filterable placement="right"
+                :consistent-menu-width="false">
                 <template #action>
                     <div style="display:flex;flex-direction: row;justify-content: space-between;">
                         <n-input placeholder="输出文件名" v-model:value="item.outputName" />
@@ -19,13 +14,34 @@
             </n-tree-select>
 
             <n-tree-select v-if="item.argType === 'input-folder'" v-model:value="item.value" key-field="path"
-                :options="store.getDirTree" filterable />
+                :options="store.getDirTree" filterable>
+            </n-tree-select>
 
-            <n-tree-select ref="treeRef" v-if="item.argType === 'output-folder'" v-model:value="item.dir" key-field="path"
-                :options="store.getDirTree" filterable default-expand-all :consistent-menu-width="false">
+            <n-tree-select ref="treeRef" v-if="item.argType === 'output-folder'" v-model:value="item.dir"
+                key-field="path" :options="store.getDirTree" filterable default-expand-all show-path
+                :consistent-menu-width="false">
                 <template #action>
                     <div style="display:flex;flex-direction: row;justify-content: space-between;">
                         <n-input placeholder="输出文件夹" v-model:value="item.outputName" />
+                        <n-button @click="setDefaultFileName(item)">默认</n-button>
+                    </div>
+                </template>
+            </n-tree-select>
+
+            <n-input v-if="item.argType === 'string'" v-model:value="item.value" />
+
+            <n-select v-if="item.argType === 'select'" v-model:value="item.value" :options="item.options" />
+
+            <!-- 
+                <n-tree-select v-if="item.argType === 'input-raster'" v-model:value="item.value"
+                :options="store.getRasterTree" key-field="path" filterable :consistent-menu-width="false" />
+
+            <n-tree-select ref="treeRef" v-if="item.argType === 'output-raster'" v-model:value="item.dir"
+                key-field="path" :options="store.getDirTree" filterable default-expand-all
+                :consistent-menu-width="false">
+                <template #action>
+                    <div style="display:flex;flex-direction: row;justify-content: space-between;">
+                        <n-input placeholder="输出文件名" v-model:value="item.outputName" />
                         <n-button @click="setDefaultFileName(item)">默认</n-button>
                     </div>
                 </template>
@@ -37,13 +53,11 @@
                     <n-input v-model:value="item.outputName" />
                     <n-button>默认</n-button>
                 </template>
-            </n-tree-select>
-
+            </n-tree-select> 
+        
             <n-input v-if="item.argType === 'output-vector'" v-model:value="item.value" />
-
-            <n-input v-if="item.argType === 'string'" v-model:value="item.value" />
-
-            <n-select v-if="item.argType === 'select'" v-model:value="item.value" :options="item.options" />
+        
+        -->
         </n-form-item>
     </n-form>
 </template>
