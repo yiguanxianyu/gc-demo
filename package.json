@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "format": "prettier --write .",
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview"
@@ -17,10 +18,12 @@
     "vue": "^3.3.4"
   },
   "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
     "@vicons/fa": "^0.12.0",
     "@vicons/ionicons5": "^0.12.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "naive-ui": "^2.34.4",
+    "prettier": "^3.2.5",
     "vite": "^4.4.9"
   }
 }

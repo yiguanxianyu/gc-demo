@@ -1,0 +1,13 @@
+singleQuote: true
+semi: false
+printWidth: 120
+trailingComma: none
+
+plugins:
+  - '@ianvs/prettier-plugin-sort-imports'
+
+importOrder:
+  - ^@core/(.*)$
+  - ^@server/(.*)$
+  - ^@ui/(.*)$
+  - '^[./]'

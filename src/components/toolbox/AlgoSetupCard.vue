@@ -7,98 +7,109 @@
  * @property {array} arguments
  */
 
-import { NButton, NCard, NModal, useMessage } from "naive-ui";
-import ArgForm from "@/components/toolbox/ArgForm.vue";
-import axios from "axios";
-import { useUsersStore } from "@/store/user.js";
-const message = useMessage();
+import { useUsersStore } from '@/store/user.js'
+import axios from 'axios'
+import { NButton, NCard, NModal, NSpin, useMessage, useNotification } from 'naive-ui'
+import { h, ref } from 'vue'
 
-const store = useUsersStore();
+const message = useMessage()
+
+const noti = useNotification()
+
+const nRef = ref(null)
+
+const store = useUsersStore()
 
 const props = defineProps({
-    visible: Boolean,
-    algoInfo: Object
-});
+  visible: Boolean,
+  algoInfo: Object
+})
 
-const emit = defineEmits(['update:visible']);
+const emit = defineEmits(['update:visible'])
 
 const closeModal = () => {
-    emit('update:visible', false);
+  emit('update:visible', false)
 }
 
 const userConfirmed = () => {
-    const algo = props.algoInfo;
-    let params = {};
+  if (nRef.value !== null) {
+    message.error('请先等待上一个计算任务完成并关闭窗口')
+    return
+  }
 
-    for (let i = 0; i < algo.arguments.length; i++) {
-        const arg = algo.arguments[i];
-        if (arg.argType.startsWith('output')) {
-            if (arg.outputName === undefined) {
-                arg.value = arg.dir;
-            } else {
-                arg.value = arg.dir + '/' + arg.outputName;
-            }
-        }
-        if (arg.value === undefined) {
-            params[arg.label] = null
-        } else {
-            params[arg.label] = arg.value;
-        }
+  const algo = props.algoInfo
+
+  nRef.value = noti.create({
+    title: algo.label + ' 计算中',
+    scrollable: true,
+    closable: false,
+    avatar: () => h(NSpin),
+    onClose: () => {
+      nRef.value = null
     }
+  })
 
-    console.log(algo, params);
+  axios
+    .post(import.meta.env.VITE_BACKEND_API + '/post/run', {
+      'algo-key': algo.key
+    })
+    .then((res) => {
+      nRef.value.title = algo.label + ' 计算成功'
+      nRef.value.content = res.data.message
+      nRef.value.avatar = null
+      nRef.value.closable = true
 
-    axios.post(import.meta.env.VITE_BACKEND_API + "/post/run", {
-        "algo-key": algo.key,
-        "params": params
-    }).then(res => {
-        message.success('计算成功\n' + res.data.message);
-        store.fetchDirFromServer();
-        if (res.data.label !== undefined && res.data.path !== undefined) {
-            store.addLayer({
-                label: res.data.label,
-                path: res.data.path,
-            })
-        }
-    }).catch(err => {
-        message.error('计算失败\n' + err);
-    });
+      store.fetchDirFromServer()
+      if (res.data.label !== undefined && res.data.path !== undefined) {
+        store.addLayer({
+          label: res.data.label,
+          path: res.data.path
+        })
+      }
+    })
+    .catch((err) => {
+      nRef.value.title = algo.label + ' 计算失败'
+      nRef.value.content = err.response.data.message
+      nRef.value.avatar = null
+      nRef.value.closable = true
+    })
 
-    closeModal();
-}
-
-const userCanceled = () => {
-    closeModal();
+  closeModal()
 }
 </script>
 
 <template>
-    <n-modal :mask-closable="false" :show="visible" @update:show="closeModal">
-        <n-card :title="algoInfo.label" aria-modal="true" role="dialog" size="huge" style="width:800px">
-            <template #header-extra>
-                <n-button style="margin: 5px" type="primary" @click="userCanceled">取消</n-button>
-                <n-button type="primary" @click="userConfirmed">执行</n-button>
-            </template>
+  <n-modal
+    preset="card"
+    :mask-closable="false"
+    :show="visible"
+    @update:show="closeModal"
+    :title="algoInfo.label"
+    aria-modal="true"
+    role="dialog"
+    size="huge"
+    style="width: 800px"
+  >
+    <template #header-extra>
+      <n-button type="primary" @click="userConfirmed">执行</n-button>
+    </template>
 
-            <div id="container">
-                <n-card id="algo_text" style="">{{ algoInfo.text }}</n-card>
-                <ArgForm v-model:arg-array="algoInfo.arguments" style="width: 250px" />
-            </div>
-        </n-card>
-    </n-modal>
+    <div id="container">
+      <n-card id="algo_text" style="">{{ algoInfo.text }}</n-card>
+    </div>
+  </n-modal>
 </template>
 
 <style scoped>
 #container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 #algo_text {
-    white-space: pre-line;
-    max-width: 400px;
-    margin: 0 15px 0 0;
-    overflow: auto;
+  white-space: pre-line;
+  margin: 0 15px 0 0;
+  overflow: auto;
 }
 </style>

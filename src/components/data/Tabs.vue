@@ -1,29 +1,28 @@
 <script setup>
-import {NIcon, NTabPane, NTabs} from 'naive-ui';
-import {Database, LayerGroup} from '@vicons/fa';
-import LayerPage from "./tab_page/LayerPage.vue";
-import DataPage from "./tab_page/DataPage.vue";
+import { Database, LayerGroup } from '@vicons/fa'
+import { NIcon, NTabPane, NTabs } from 'naive-ui'
+import DataPage from './tab_page/DataPage.vue'
+import LayerPage from './tab_page/LayerPage.vue'
 </script>
 
 <template>
-    <n-tabs animated class="data-tab" type="card">
-        <n-tab-pane display-directive="show" name="layer">
-            <LayerPage/>
-            <template #tab>
-                <n-icon :component="LayerGroup"/>
-                &nbsp图层
-            </template>
-        </n-tab-pane>
+  <n-tabs animated class="data-tab" type="card">
+    <n-tab-pane display-directive="show" name="layer">
+      <LayerPage />
+      <template #tab>
+        <n-icon :component="LayerGroup" />
+        &nbsp图层
+      </template>
+    </n-tab-pane>
 
-        <n-tab-pane display-directive="show" name="data">
-            <DataPage/>
-            <template #tab>
-                <n-icon :component="Database"/>
-                &nbsp数据管理
-            </template>
-        </n-tab-pane>
-
-    </n-tabs>
+    <n-tab-pane display-directive="show" name="data">
+      <DataPage />
+      <template #tab>
+        <n-icon :component="Database" />
+        &nbsp数据管理
+      </template>
+    </n-tab-pane>
+  </n-tabs>
 </template>
 
 <style lang="scss" scoped>
@@ -34,7 +33,7 @@ import DataPage from "./tab_page/DataPage.vue";
 }
 
 :deep(.n-tabs-pane-wrapper) {
-  overflow: auto
+  overflow: auto;
 }
 
 :deep(::-webkit-scrollbar) {
