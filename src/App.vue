@@ -1,18 +1,16 @@
 <template>
   <n-dialog-provider>
     <n-message-provider>
-      <n-notification-provider>
-        <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
-          <!-- inline-theme-disabled-->
-          <div id="app">
-            <MapView id="map" />
-            <Header id="title-card" />
-            <LeftSideBar id="floating-panel-left" />
-            <RightSideBar id="floating-panel-right" />
-            <Monitor id="floating-panel-monitor" />
-          </div>
-        </n-config-provider>
-      </n-notification-provider>
+      <n-config-provider :theme="darkTheme" :theme-overrides="themeOverrides">
+        <!-- inline-theme-disabled-->
+        <div id="app">
+          <MapView id="map" />
+          <Header id="title-card" />
+          <LeftSideBar id="floating-panel-left" />
+          <RightSideBar id="floating-panel-right" />
+          <Monitor id="floating-panel-monitor" />
+        </div>
+      </n-config-provider>
     </n-message-provider>
   </n-dialog-provider>
 </template>
@@ -23,7 +21,7 @@ import Header from '@/components/header/Header.vue'
 import MapView from '@/components/map/MapView.vue'
 import Monitor from '@/components/monitor/Monitor.vue'
 import RightSideBar from '@/components/toolbox/RightSideBar.vue'
-import { darkTheme, NConfigProvider, NDialogProvider, NMessageProvider, NNotificationProvider } from 'naive-ui'
+import { darkTheme, NConfigProvider, NDialogProvider, NMessageProvider } from 'naive-ui'
 
 const themeOverrides = {
   Statistic: {

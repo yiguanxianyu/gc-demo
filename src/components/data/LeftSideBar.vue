@@ -10,7 +10,7 @@ const { pattern } = storeToRefs(store)
 
 <template>
   <div class="container">
-    <n-input v-model:value="pattern" placeholder="搜索" />
+    <!-- <n-input v-model:value="pattern" placeholder="搜索" /> -->
     <Tabs id="left-menu" />
   </div>
 </template>

@@ -32,7 +32,7 @@ onMounted(() => {
 <template>
   <div>
     <n-grid :cols="4" :rows="2" x-gap="12">
-      <n-gi>
+      <!-- <n-gi>
         <n-statistic :value="monitorData.numImages" class="stat-label" label="影像数量">
           <template #prefix>
             <n-icon :component="FileImage" />
@@ -60,7 +60,7 @@ onMounted(() => {
           </template>
           <template #suffix>%</template>
         </n-statistic>
-      </n-gi>
+      </n-gi> -->
       <n-gi>
         <n-statistic :value="monitorData.cpuUsage" class="stat-label" label="CPU占用">
           <template #prefix>

@@ -1,34 +1,18 @@
 <template>
   <div id="container">
-    <n-tree
-      :data="dataItems"
-      :node-props="nodeProps"
-      :pattern="pattern"
-      :show-irrelevant-nodes="false"
-      class="tree"
-      expand-on-click
-      key-field="path"
-      selectable
-      @update:selected-keys="selectedKeyChanged"
-      @update:expanded-keys="updatePrefixWithExpaned"
-    />
-    <n-dropdown
-      :options="options"
-      :show="showDropdown"
-      :x="xRef"
-      :y="yRef"
-      placement="bottom"
-      trigger="manual"
-      @clickoutside="showDropdown = false"
-      @select="handleSelect"
-    />
+    <n-cascader :options="dataItems" check-strategy="child"></n-cascader>
+    <n-tree :data="dataItems" :node-props="nodeProps" :pattern="pattern" :show-irrelevant-nodes="false" class="tree"
+      expand-on-click key-field="value" selectable @update:selected-keys="selectedKeyChanged"
+      @update:expanded-keys="updatePrefixWithExpaned" />
+    <n-dropdown :options="options" :show="showDropdown" :x="xRef" :y="yRef" placement="bottom" trigger="manual"
+      @clickoutside="showDropdown = false" @select="handleSelect" />
   </div>
 </template>
 
 <script setup>
 import { useUsersStore } from '@/store/user.js'
 import { Folder, FolderOpenOutline } from '@vicons/ionicons5'
-import { NDropdown, NIcon, NTree, useDialog, useMessage } from 'naive-ui'
+import { NCascader, NDropdown, NIcon, NTree, useDialog, useMessage } from 'naive-ui'
 import { storeToRefs } from 'pinia'
 import { h, onBeforeMount, ref } from 'vue'
 
@@ -59,7 +43,6 @@ const addToLayer = () => {
     return
   }
   store.addLayer(selectedItem)
-  //TODO: add to ol layer
 }
 
 const removePath = () => {
@@ -139,26 +122,26 @@ const nodeProps = ({ option }) => {
             key: 'selected-file',
             disabled: true
           },
-          {
-            label: '预览',
-            key: 'preview-file'
-          },
+          // {
+          //   label: '预览',
+          //   key: 'preview-file'
+          // },
           {
             label: '添加到图层',
             key: 'add-to-layer'
           },
-          {
-            label: '重命名',
-            key: 'rename-path'
-          },
-          {
-            label: '删除',
-            key: 'remove-path'
-          },
-          {
-            label: '下载',
-            key: 'download-file'
-          }
+          // {
+          //   label: '重命名',
+          //   key: 'rename-path'
+          // },
+          // {
+          //   label: '删除',
+          //   key: 'remove-path'
+          // },
+          // {
+          //   label: '下载',
+          //   key: 'download-file'
+          // }
         ]
       }
 
@@ -209,4 +192,10 @@ const handleSelect = (option) => {
 :deep(.n-tree-node-indent) {
   width: 4px;
 }
+
+:deep(.n-cascader) {
+  column-width: 400px;
+  /* 调整为你想要的宽度 */
+}
 </style>
+

@@ -116,15 +116,21 @@ export const useUsersStore = defineStore('users', {
           }
         })
         .then((res) => {
-          const thumbnailId = res.data.thumbnailId
+          // const thumbnailId = res.data.thumbnailId
           const extent = res.data.extent
 
           const layerToAdd = new ImageLayer({
             source: new Static({
-              url: import.meta.env.VITE_BACKEND_API + '/get/thumbnail/?thumbnailId=' + thumbnailId,
+              url: import.meta.env.VITE_BACKEND_API + '/get/thumbnail/?path=' + selectedItem.path,
               imageExtent: extent
             })
           })
+          // const layerToAdd = new ImageLayer({
+          //   source: new Static({
+          //     url: import.meta.env.VITE_BACKEND_API + '/get/thumbnail/?thumbnailId=' + thumbnailId,
+          //     imageExtent: extent
+          //   })
+          // })
 
           // Add GeoTIFF Layer but very poor performance
           // const layerToAdd = new TileLayer({
