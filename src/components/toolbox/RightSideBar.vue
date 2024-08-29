@@ -1,14 +1,13 @@
 <script setup>
 import { useUsersStore } from '@/store/user.js'
 import { Toolbox } from '@vicons/fa'
-import { NCard, NIcon, NMenu, NScrollbar, useMessage } from 'naive-ui'
+import { NCard, NIcon, NMenu, NScrollbar } from 'naive-ui'
 import { storeToRefs } from 'pinia'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import AlgoSetup from './AlgoSetupCard.vue'
 
-const message = useMessage()
 const store = useUsersStore()
-const { algorithms: menuOptions } = storeToRefs(store)
+const { algorithms: menuAlgorithms } = storeToRefs(store)
 
 const currAlgoInfo = ref({})
 const showModal = ref(false)
@@ -22,6 +21,7 @@ const menuValueUpdate = (key, item) => {
 
 onBeforeMount(() => {
   store.fetchAlgorithmsFromServer()
+  store.fetchInputDataFromServer()
 })
 </script>
 
@@ -41,10 +41,11 @@ onBeforeMount(() => {
     <n-scrollbar style="border: 1px solid #dddddd; border-radius: 5px">
       <n-menu
         :indent="18"
-        :options="menuOptions"
+        :options="menuAlgorithms"
         :root-indent="12"
         default-expand-all
         @update-value="menuValueUpdate"
+        accordion
       />
     </n-scrollbar>
 

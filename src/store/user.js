@@ -51,7 +51,9 @@ export const useUsersStore = defineStore('users', {
     return {
       layers: [],
       layerGroup: new LayerGroup({}), //存放图层
-      data: [], //存放文件数据
+      outputData: {}, //存放文件数据
+      inputData: null,
+      algoInfoText: null,
       algorithms: [], //存放算法数据
       pattern: '', //用于搜索的匹配字符串
       view: new View({
@@ -91,7 +93,7 @@ export const useUsersStore = defineStore('users', {
     },
     findNodeParentByPath(path) {
       const pathArr = path.split('/')
-      let node = this.data
+      let node = this.outputData.value
 
       for (let i = 0; i < pathArr.length - 1; i++) {
         node = node.find((item) => item.label === pathArr[i]).children
@@ -112,7 +114,7 @@ export const useUsersStore = defineStore('users', {
       axios
         .get(import.meta.env.VITE_BACKEND_API + '/get/iteminfo', {
           params: {
-            path: selectedItem.path
+            path: selectedItem.key
           }
         })
         .then((res) => {
@@ -121,7 +123,7 @@ export const useUsersStore = defineStore('users', {
 
           const layerToAdd = new ImageLayer({
             source: new Static({
-              url: import.meta.env.VITE_BACKEND_API + '/get/thumbnail/?path=' + selectedItem.path,
+              url: import.meta.env.VITE_BACKEND_API + '/get/thumbnail/?path=' + selectedItem.key,
               imageExtent: extent
             })
           })
@@ -151,7 +153,7 @@ export const useUsersStore = defineStore('users', {
 
           layerToAdd.layerInfo = {
             label: selectedItem.label,
-            path: selectedItem.path
+            path: selectedItem.key
           }
 
           this.layerGroup.getLayers().push(layerToAdd)
@@ -184,12 +186,26 @@ export const useUsersStore = defineStore('users', {
       tree.forEach(traverseTree)
       return tree
     },
-    fetchDirFromServer() {
+    fetchOutputDataFromServer() {
       // Fetch directory tree from server
       axios
-        .get(import.meta.env.VITE_BACKEND_API + '/get/directory')
+        .get(import.meta.env.VITE_BACKEND_API + '/get/directory/output')
         .then((response) => {
-          this.data = this.addTreePrefixSuffix(response.data)
+          this.outputData = response.data
+          for (const [key, value] of Object.entries(response.data)) {
+            this.outputData[key] = this.addTreePrefixSuffix(value)
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    fetchInputDataFromServer() {
+      axios
+        .get(import.meta.env.VITE_BACKEND_API + '/get/directory/input')
+        .then((response) => {
+          this.inputData = response.data[0]
+          this.algoInfoText = response.data[1]
         })
         .catch((error) => {
           console.log(error)

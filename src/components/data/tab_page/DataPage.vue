@@ -1,48 +1,73 @@
 <template>
   <div id="container">
-    <n-cascader :options="dataItems" check-strategy="child"></n-cascader>
-    <n-tree :data="dataItems" :node-props="nodeProps" :pattern="pattern" :show-irrelevant-nodes="false" class="tree"
-      expand-on-click key-field="value" selectable @update:selected-keys="selectedKeyChanged"
-      @update:expanded-keys="updatePrefixWithExpaned" />
-    <n-dropdown :options="options" :show="showDropdown" :x="xRef" :y="yRef" placement="bottom" trigger="manual"
-      @clickoutside="showDropdown = false" @select="handleSelect" />
+    <n-cascader
+      :options="menuAlgorithms"
+      value-field="key"
+      check-strategy="child"
+      v-model:value="selectedAlgo"
+      placeholder="选择算法"
+    ></n-cascader>
+
+    <n-tree
+      :data="menuData[selectedAlgo]"
+      :node-props="nodeProps"
+      :pattern="pattern"
+      :show-irrelevant-nodes="false"
+      class="tree"
+      expand-on-click
+      selectable
+      @update:selected-keys="selectedKeyChanged"
+    />
+    <!-- @update:expanded-keys="updatePrefixWithExpaned"  -->
+
+    <n-dropdown
+      :options="options"
+      :show="showDropdown"
+      :x="xRef"
+      :y="yRef"
+      placement="bottom"
+      trigger="manual"
+      @clickoutside="showDropdown = false"
+      @select="handleSelect"
+    />
   </div>
 </template>
 
 <script setup>
 import { useUsersStore } from '@/store/user.js'
-import { Folder, FolderOpenOutline } from '@vicons/ionicons5'
+// import { Folder, FolderOpenOutline } from '@vicons/ionicons5'
 import { NCascader, NDropdown, NIcon, NTree, useDialog, useMessage } from 'naive-ui'
 import { storeToRefs } from 'pinia'
 import { h, onBeforeMount, ref } from 'vue'
 
 const message = useMessage()
 const dialog = useDialog()
+
 const store = useUsersStore()
 
-const { data: dataItems, pattern } = storeToRefs(store)
+store.fetchOutputDataFromServer()
+
+const { algorithms: menuAlgorithms, outputData: menuData, pattern } = storeToRefs(store)
 
 const xRef = ref(0)
 const yRef = ref(0)
 const showDropdown = ref(false)
 const options = ref([])
+const selectedAlgo = ref()
 let selectedItem = null
 
-onBeforeMount(() => {
-  store.fetchDirFromServer()
-})
-
-const previewFile = () => {
-  message.error('该功能尚未实现')
-}
-
 const addToLayer = () => {
+  // console.log(selectedItem)
   //Check if layer exists
-  if (store.checkLayerExists(selectedItem.path)) {
+  if (store.checkLayerExists(selectedItem.key)) {
     message.error('已存在的图层不能重复添加')
     return
   }
   store.addLayer(selectedItem)
+}
+
+const previewFile = () => {
+  message.error('该功能尚未实现')
 }
 
 const removePath = () => {
@@ -73,23 +98,23 @@ const selectedKeyChanged = (keys, option, meta) => {
   }
 }
 
-const updatePrefixWithExpaned = (_keys, _option, meta) => {
-  if (!meta.node) return
-  switch (meta.action) {
-    case 'expand':
-      meta.node.prefix = () =>
-        h(NIcon, null, {
-          default: () => h(FolderOpenOutline)
-        })
-      break
-    case 'collapse':
-      meta.node.prefix = () =>
-        h(NIcon, null, {
-          default: () => h(Folder)
-        })
-      break
-  }
-}
+// const updatePrefixWithExpaned = (_keys, _option, meta) => {
+// if (!meta.node) return
+// switch (meta.action) {
+//   case 'expand':
+//     meta.node.prefix = () =>
+//       h(NIcon, null, {
+//         default: () => h(FolderOpenOutline)
+//       })
+//     break
+//   case 'collapse':
+//     meta.node.prefix = () =>
+//       h(NIcon, null, {
+//         default: () => h(Folder)
+//       })
+//     break
+// }
+// }
 
 const nodeProps = ({ option }) => {
   return {
@@ -129,7 +154,7 @@ const nodeProps = ({ option }) => {
           {
             label: '添加到图层',
             key: 'add-to-layer'
-          },
+          }
           // {
           //   label: '重命名',
           //   key: 'rename-path'
@@ -198,4 +223,3 @@ const handleSelect = (option) => {
   /* 调整为你想要的宽度 */
 }
 </style>
-

@@ -1,11 +1,11 @@
 <script setup>
-import { useUsersStore } from '@/store/user'
-import { NInput } from 'naive-ui'
-import { storeToRefs } from 'pinia'
+// import { useUsersStore } from '@/store/user'
+// import { NInput } from 'naive-ui'
+// import { storeToRefs } from 'pinia'
 import Tabs from './Tabs.vue'
 
-const store = useUsersStore()
-const { pattern } = storeToRefs(store)
+// const store = useUsersStore()
+// const { pattern } = storeToRefs(store)
 </script>
 
 <template>
