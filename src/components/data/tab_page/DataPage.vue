@@ -6,7 +6,7 @@
       check-strategy="child"
       v-model:value="selectedAlgo"
       placeholder="选择算法"
-    ></n-cascader>
+    />
 
     <n-tree
       :data="menuData[selectedAlgo]"
@@ -35,10 +35,9 @@
 
 <script setup>
 import { useUsersStore } from '@/store/user.js'
-// import { Folder, FolderOpenOutline } from '@vicons/ionicons5'
-import { NCascader, NDropdown, NIcon, NTree, useDialog, useMessage } from 'naive-ui'
+import { NCascader, NDropdown, NTree, useDialog, useMessage } from 'naive-ui'
 import { storeToRefs } from 'pinia'
-import { h, onBeforeMount, ref } from 'vue'
+import { ref } from 'vue'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -57,7 +56,6 @@ const selectedAlgo = ref()
 let selectedItem = null
 
 const addToLayer = () => {
-  // console.log(selectedItem)
   //Check if layer exists
   if (store.checkLayerExists(selectedItem.key)) {
     message.error('已存在的图层不能重复添加')
@@ -78,7 +76,7 @@ const removePath = () => {
     positiveText: '确定',
     negativeText: '取消',
     onPositiveClick: () => {
-      store.removePath(selectedItem.path)
+      store.removePath(selectedItem.key)
     }
   })
 }
@@ -154,15 +152,15 @@ const nodeProps = ({ option }) => {
           {
             label: '添加到图层',
             key: 'add-to-layer'
-          }
+          },
           // {
           //   label: '重命名',
           //   key: 'rename-path'
           // },
-          // {
-          //   label: '删除',
-          //   key: 'remove-path'
-          // },
+          {
+            label: '删除',
+            key: 'remove-path'
+          }
           // {
           //   label: '下载',
           //   key: 'download-file'

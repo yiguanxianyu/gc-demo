@@ -5,39 +5,45 @@ import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
 
 const store = useUsersStore()
-const { pattern } = storeToRefs(store)
+const { pattern, algorithms_dict } = storeToRefs(store)
 
+let chosenItem = null
 const xRef = ref(0)
 const yRef = ref(0)
 const showDropdown = ref(false)
-const options = ref([])
-let chosenItem = null
+const options = ref([
+  {
+    label: 'PLACEHOLDER',
+    key: 'selected-item',
+    disabled: true
+  },
+  // {
+  //   label: '重命名',
+  //   key: 'rename-path'
+  // },
+  {
+    label: '移除图层',
+    key: 'remove-layer'
+  },
+  // {
+  //   label: '下载数据',
+  //   key: 'download-dir'
+  // },
+  {
+    label: '定位',
+    key: 'locate-layer'
+  }
+])
 
 const handleContextMenu = (e, item) => {
   chosenItem = item
-  options.value = [
-    {
-      label: item.label,
-      key: 'selected-item',
-      disabled: true
-    },
-    {
-      label: '重命名',
-      key: 'rename-path'
-    },
-    {
-      label: '删除',
-      key: 'remove-layer'
-    },
-    {
-      label: '下载',
-      key: 'download-dir'
-    },
-    {
-      label: '定位',
-      key: 'locate-layer'
-    }
-  ]
+
+  const path_split = item.path.split('/')
+  const algo_output_dir = path_split[5]
+  const algo_name = algorithms_dict.value[algo_output_dir]
+  const path = [algo_name, ...path_split.slice(6)].join('/')
+  options.value[0].label = path
+
   xRef.value = e.clientX
   yRef.value = e.clientY
   showDropdown.value = true
@@ -69,9 +75,6 @@ const handleSelect = (option) => {
 
 <template>
   <div id="container">
-    <!-- <n-tree id="tree" :data="store.getLayerTree" :node-props="nodeProps" :pattern="pattern"
-                                                    :show-irrelevant-nodes="false" checkable key-field="path" /> -->
-
     <n-list>
       <template v-for="item in store.getLayerList">
         <n-list-item

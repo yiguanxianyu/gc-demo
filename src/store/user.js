@@ -8,41 +8,41 @@ import View from 'ol/View'
 import { defineStore } from 'pinia'
 import { h } from 'vue'
 
-const _getSomeTree = (state, type) => {
-  if (type.startsWith('.')) {
-    const suffix = type.toLowerCase()
-    const traverse = (node) => {
-      if (node.children) {
-        const filteredChildren = node.children.map(traverse).filter((child) => child !== null)
-        return { ...node, children: filteredChildren, disabled: true }
-      }
-      const fileWithValidSuffix = node.label.toLowerCase().endsWith(suffix)
-      return fileWithValidSuffix ? node : null
-    }
-    return state.data.map(traverse).filter((node) => node !== null)
-  } else if (type === 'raster' || type === 'vector') {
-    const suffixes = type === 'raster' ? ['.tif', '.tiff'] : ['.shp', '.geojson']
+// const _getSomeTree = (state, type) => {
+//   if (type.startsWith('.')) {
+//     const suffix = type.toLowerCase()
+//     const traverse = (node) => {
+//       if (node.children) {
+//         const filteredChildren = node.children.map(traverse).filter((child) => child !== null)
+//         return { ...node, children: filteredChildren, disabled: true }
+//       }
+//       const fileWithValidSuffix = node.label.toLowerCase().endsWith(suffix)
+//       return fileWithValidSuffix ? node : null
+//     }
+//     return state.data.map(traverse).filter((node) => node !== null)
+//   } else if (type === 'raster' || type === 'vector') {
+//     const suffixes = type === 'raster' ? ['.tif', '.tiff'] : ['.shp', '.geojson']
 
-    const traverse = (node) => {
-      if (node.children) {
-        const filteredChildren = node.children.map(traverse).filter((child) => child !== null)
-        return { ...node, children: filteredChildren, disabled: true }
-      }
-      const fileWithValidSuffix = suffixes.some((suffix) => node.label.toLowerCase().endsWith(suffix))
-      return fileWithValidSuffix ? node : null
-    }
-    return state.data.map(traverse).filter((node) => node !== null)
-  } else if (type === 'dir') {
-    const traverse = (node) => {
-      if (node.children) {
-        const filteredChildren = node.children.map(traverse).filter((child) => child !== null)
-        return { ...node, children: filteredChildren }
-      }
-      return null // 过滤掉所有的文件
-    }
-    return state.data.map(traverse).filter((node) => node !== null)
-  }
-}
+//     const traverse = (node) => {
+//       if (node.children) {
+//         const filteredChildren = node.children.map(traverse).filter((child) => child !== null)
+//         return { ...node, children: filteredChildren, disabled: true }
+//       }
+//       const fileWithValidSuffix = suffixes.some((suffix) => node.label.toLowerCase().endsWith(suffix))
+//       return fileWithValidSuffix ? node : null
+//     }
+//     return state.data.map(traverse).filter((node) => node !== null)
+//   } else if (type === 'dir') {
+//     const traverse = (node) => {
+//       if (node.children) {
+//         const filteredChildren = node.children.map(traverse).filter((child) => child !== null)
+//         return { ...node, children: filteredChildren }
+//       }
+//       return null // 过滤掉所有的文件
+//     }
+//     return state.data.map(traverse).filter((node) => node !== null)
+//   }
+// }
 
 // 第一个参数是应用程序中 store 的唯一 id
 export const useUsersStore = defineStore('users', {
@@ -55,6 +55,7 @@ export const useUsersStore = defineStore('users', {
       inputData: null,
       algoInfoText: null,
       algorithms: [], //存放算法数据
+      algorithms_dict: {},
       pattern: '', //用于搜索的匹配字符串
       view: new View({
         center: [9400000, 5200000],
@@ -71,19 +72,19 @@ export const useUsersStore = defineStore('users', {
         reversedArr.push(arr[i].layerInfo)
       }
       return reversedArr
-    },
-    getRasterTree(state) {
-      return _getSomeTree(state, 'raster')
-    },
-    getVectorTree(state) {
-      return _getSomeTree(state, 'vector')
-    },
-    getDirTree(state) {
-      return _getSomeTree(state, 'dir')
-    },
-    getExtTree(state) {
-      return (ext) => _getSomeTree(state, ext)
     }
+    // getRasterTree(state) {
+    //   return _getSomeTree(state, 'raster')
+    // },
+    // getVectorTree(state) {
+    //   return _getSomeTree(state, 'vector')
+    // },
+    // getDirTree(state) {
+    //   return _getSomeTree(state, 'dir')
+    // },
+    // getExtTree(state) {
+    //   return (ext) => _getSomeTree(state, ext)
+    // }
   },
   actions: {
     findNodeByPath(path) {
@@ -150,7 +151,6 @@ export const useUsersStore = defineStore('users', {
           //         interpolate: false
           //     })
           // })
-
           layerToAdd.layerInfo = {
             label: selectedItem.label,
             path: selectedItem.key
@@ -221,6 +221,14 @@ export const useUsersStore = defineStore('users', {
         .catch((error) => {
           console.log(error)
         })
+      axios
+        .get(import.meta.env.VITE_BACKEND_API + '/get/algorithms_dict')
+        .then((response) => {
+          this.algorithms_dict = response.data
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
     removePath(path) {
       // Remove path from server
@@ -229,9 +237,10 @@ export const useUsersStore = defineStore('users', {
           path: path
         })
         .then((_res) => {
-          const parentArr = this.findNodeParentByPath(path)
-          const index = parentArr.findIndex((item) => item.path === path)
-          parentArr.splice(index, 1)
+          // const parentArr = this.findNodeParentByPath(path)
+          // const index = parentArr.findIndex((item) => item.path === path)
+          // parentArr.splice(index, 1)
+          this.fetchOutputDataFromServer()
           this.removeLayer(path)
         })
         .catch((error) => {
