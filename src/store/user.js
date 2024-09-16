@@ -155,8 +155,8 @@ export const useUsersStore = defineStore('users', {
             label: selectedItem.label,
             path: selectedItem.key
           }
-
-          this.layerGroup.getLayers().push(layerToAdd)
+          // 插入头部，防止checkbox被遮挡
+          this.layerGroup.getLayers().insertAt(0, layerToAdd)
           this.view.fit(extent)
         })
         .catch((error) => {
